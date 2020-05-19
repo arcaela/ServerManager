@@ -23,11 +23,3 @@ mysql -uroot <<MYSQL_SCRIPT
     GRANT ALL PRIVILEGES ON *.* TO 'arcaela'@'%' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
 MYSQL_SCRIPT
-
-echo "Creando llaves SSH: "
-sshpath="./vm/$USER"
-rootsshpath="./vm/root/"
-[ -d $sshpath ] || mkdir $sshpath
-[ -d $rootsshpath ] || mkdir $rootsshpath
-ssh-keygen -f "$sshpath/ssh" -N ""
-ssh-keygen -f "$sshpath/ssh" -N ""
