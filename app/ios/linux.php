@@ -16,6 +16,7 @@ return [
     'add'=>function($item){
         // Registrar el Dominio
         $fn = fopen($this->path->vhosts.$item->CONF_FILE,'a');
+            
         $is_done = fputs($fn, template((IS_SSL?'ssl':(param('ssl-only')?'ssl-only':'VirtualHost')),$item));
         fclose($fn);
         line(($is_done?"Creado: ":"Error: ").$item->DOMAIN_NAME);

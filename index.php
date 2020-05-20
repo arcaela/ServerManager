@@ -12,8 +12,8 @@
         // Creamos los elementos
         ->map(function($info){
             return collect([
-                'SERVER_ROOT'=>$info->path,
-                'DOCUMENT_ROOT'=>path(glob($info->path.'/public*')[0]??$info->path)->path,
+                'SERVER_ROOT'=>$info->real->path,
+                'DOCUMENT_ROOT'=>path(glob($info->real->path.'/public*')[0]??$info->real->path)->real->path,
                 'DOMAIN_NAME'=>preg_replace('/\.+/', '.', $info->filename.'.'.(config('tld')??$info->extension)),
                 'CONF_FILE'=>$info->filename.(IS_SSL?'-ssl':'').'.conf',
             ]);
