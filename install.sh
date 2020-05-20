@@ -26,11 +26,9 @@ echo "Instalacion de Composer: "
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 php -r "unlink('composer-setup.php');"
-if [ -d "$HOME/.config/composer/vendor/bin" ]
-then
+if [ -d "$HOME/.config/composer/vendor/bin" ]; then
     echo 'export PATH="$PATH:$HOME/.config/composer/vendor/bin"' >> ~/.bashrc
-else if [ -d "$HOME/.composer/vendor/bin" ]
-then
+else if [ -d "$HOME/.composer/vendor/bin" ]; then
     echo 'export PATH="$PATH:$HOME/.composer/vendor/bin"' >> ~/.bashrc
 fi
 source ~/.bashrc
@@ -45,6 +43,3 @@ sudo rm -rf ./node-$VERSION-$DISTRO.tar.xz
 sudo ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/node /usr/bin/node
 sudo ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npm /usr/bin/npm
 sudo ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npx /usr/bin/npx
-
-echo "Instalacion de Laravel: "
-composer global require laravel/installer
