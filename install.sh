@@ -28,8 +28,10 @@ sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 php -r "unlink('composer-setup.php');"
 if [ -d "$HOME/.config/composer/vendor/bin" ]; then
     echo 'export PATH="$PATH:$HOME/.config/composer/vendor/bin"' >> ~/.bashrc
-    source ~/.bashrc
+else if [ -d "$HOME/.composer/vendor/bin" ]; then
+    echo 'export PATH="$PATH:$HOME/.composer/vendor/bin"' >> ~/.bashrc
 fi
+source ~/.bashrc
 
 echo "Instalacion de NodeJs: "
 VERSION=v12.16.3
