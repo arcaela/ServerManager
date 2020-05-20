@@ -3,7 +3,8 @@ if(!function_exists('config')) include __DIR__.'/app/autoload.php';
 
 $root = __DIR__.'/resources/';
 $composer_path = $root.'composer/';
-$npm_path = $root.'npm/arcaela/';
+$npm_path = $root.'npm/';
+
 line();
 path(config('path')->pages)
     ->glob('*.*')
