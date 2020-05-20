@@ -1,4 +1,3 @@
-#!bash
 CACHE='./vm/history'
 while [[ $# -gt 0 ]]
 do
@@ -23,7 +22,7 @@ if [[ -f $CACHE ]]; then
     . $CACHE
 else
     touch $CACHE
-    echo '#!bash' >> $CACHE
+    echo '' >> $CACHE
 fi
 if [[ -z $HOST ]]; then
     if [[ -z $TEMP_HOST ]]; then
