@@ -40,10 +40,11 @@ $_CONFIGS = collect(path(__DIR__.'/ios/')->files()->files)->mapWithKeys(function
 })
 ->then(function(){ $this->active = iOS(); })
 ->native('__invoke',function(...$key){
-    if(!count($key)) return $this[$this->active];
-    return $this[$this->active][$key[0]];
+    $len=count($key);
+    if($len==1) return $this[$this->active][$key[0]];
+    if($len>=2) return $this->items[$this->active][$key[0]]=$key[1];
+    return $this[$this->active];
 });
-
 
 define('IS_SSL',param('ssl'));
 define('DOMAIN_LIST',(function(){

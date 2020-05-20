@@ -8,6 +8,7 @@ return [
     ],
     'tld'=>'.io',
     'before'=>function(){
+        param("remote")?config("tld", null):null;
         line("Procesando...\n");
         echo Console::run("sudo systemctl stop apache2");
         echo Console::run("sudo rm -rf /etc/apache2/sites-enabled/*");

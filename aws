@@ -1,0 +1,45 @@
+#!bash
+CACHE='./vm/history'
+while [[ $# -gt 0 ]]
+do
+case $1 in
+    -r|--release)
+        if [[ -f $CACHE ]]; then
+            rm $CACHE
+        fi
+    ;;
+	-h|--host)
+        HOST="$2"
+        shift
+    ;;
+	-f|--file)
+        FILEPATH="$2"
+        shift
+    ;;
+esac
+shift
+done
+if [[ -f $CACHE ]]; then
+    . $CACHE
+else
+    touch $CACHE
+    echo '#!bash' >> $CACHE
+fi
+if [[ -z $HOST ]]; then
+    if [[ -z $TEMP_HOST ]]; then
+        read -p "Remote address: " HOST
+    else
+        HOST=$TEMP_HOST
+    fi
+fi
+[[ $HOST != $TEMP_HOST ]] && echo "TEMP_HOST=$HOST" >> $CACHE
+
+if [[ -z $FILEPATH ]]; then
+    if [[ -z $TEMP_FILEPATH ]]; then
+        read -p "Credential: " FILEPATH
+    else
+        FILEPATH=$TEMP_FILEPATH
+    fi
+fi
+[[ $FILEPATH != $TEMP_FILEPATH ]] && echo "TEMP_FILEPATH=$FILEPATH" >> $CACHE
+sudo ssh -i $FILEPATH $HOST
