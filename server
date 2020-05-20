@@ -1,5 +1,3 @@
-#!bash
-
 line="sudo php ./app/server/test.php"
 context=""
 while [[ $# -gt 0 ]]
