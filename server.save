@@ -1,0 +1,14 @@
+line="sudo php ./app/server/test.php"
+context=""
+while [[ $# -gt 0 ]]
+do
+context="$context $1"
+case $1 in
+    --fresh)
+        line="sudo php ./app/server/domains.php"
+    ;;
+
+esac
+shift
+done
+$line $context

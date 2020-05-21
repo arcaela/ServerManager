@@ -1,5 +1,5 @@
 <?php
-if(!function_exists('config')) include __DIR__.'/app/autoload.php';
+if(!function_exists('config')) include __DIR__.'/../autoload.php';
 $root = __DIR__.'/../../resources/';
 $composer_path = $root.'composer/';
 $npm_path = $root.'npm/';
