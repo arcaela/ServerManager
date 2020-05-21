@@ -14,13 +14,26 @@ sudo ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npm /usr/bin/npm
 sudo ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npx /usr/bin/npx
 
 #MySQL
-sudo mysql -uroot <<MYSQL_SCRIPT
-    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
-    FLUSH PRIVILEGES;
-MYSQL_SCRIPT >>
+#sudo mysql -uroot <<MYSQL_SCRIPT
+#    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+#    FLUSH PRIVILEGES;
+#MYSQL_SCRIPT >>
 
 #Composer
 echo "Instalacion de Composer: "
-sudo php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 sudo php -r "unlink('composer-setup.php');"
+
+PATH_A='.config/composer'
+PATH_B='.composer'
+if [[ -d "$HOME/$PATH_A" ]]; then
+    CPSRBIN=$PATH_A
+elif [[ -d "$HOME/$PATH_B" ]]; then
+    CPSRBIN=$PATH_B
+fi
+if [[ ! -z $CPSRBIN ]]; then
+    sudo chmod -R 777 "$HOME/$CPSRBIN"
+    composer global require laravel/installer
+    echo 'export PATH=$PATH:'"$HOME/$CPSRBIN" >> ~/.bashrc
+fi

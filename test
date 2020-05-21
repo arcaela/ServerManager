@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+PATH_A='.config/composer'
+PATH_B='.composer'
+if [[ -d "$HOME/$PATH_A" ]]; then
+    CPSRBIN=$PATH_A
+elif [[ -d "$HOME/$PATH_B" ]]; then
+    CPSRBIN=$PATH_B
+fi
+if [[ ! -z $CPSRBIN ]]; then
+    sudo chmod -R 777 "$HOME/$CPSRBIN"
+    composer global require laravel/installer
+    echo 'export PATH=$PATH:'"$HOME/$CPSRBIN"
+fi
