@@ -14,4 +14,4 @@ case $1 in
 esac
 shift
 done
-php "./app/server/$target.php" $context
+sudo php "./app/server/$target.php" $context
