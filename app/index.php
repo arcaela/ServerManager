@@ -1,49 +1,6 @@
 <?php
 require __DIR__."/autoload.php";
 
-
-line("Inside");
-
-exit();
-if(param('install')){
-    $all=true;
-    /* Install Composer */        
-    if(!param("no-composer")&&(param("composer")||$all)){
-        // line("Instalando composer");
-        // copy('https://getcomposer.org/installer', $tmp.'/composer-setup.php');
-        // $all=false;
-    }
-    /* Install NodeJs */        
-    if(!param("no-node")&&(param("node")||$all)){
-        // line("Instalando NodeJs");
-        // $node = collect([
-            // 'path'=>store('/usr/local/lib/nodejs')->makeHasDir,
-        // ]);
-        // $VERSION="v12.16.3";
-        // $DISTRO="linux-x64";
-        // if($node->path){
-            // copy("https://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.xz","$tmp/node.tar.xz");
-            // sudo tar -xJvf node-$VERSION-$DISTRO.tar.xz -C /usr/local/lib/nodejs
-            // line((store("/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/node")->linkTo('/usr/bin/node')?'Instalado: ':'Error: ').'node');
-            // line((store("/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npm")->linkTo('/usr/bin/npm')?'Instalado: ':'Error: ').'npm');
-            // line((store("/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npx")->linkTo('/usr/bin/npx')?'Instalado: ':'Error: ').'npx');
-        // }
-        // else line('No pudimos crear el directorio para NodeJs');
-        // $all=false;
-    }
-    /* Install Laravel */        
-    if(!param("no-laravel")&&(param("laravel")||$all)){
-        // line("Instalando Laravel");
-        // line( Console::run('composer global require laravel/installer') );
-    }
-    if($all){
-        // line(`sudo mysql -uroot <<MYSQL_SCRIPT
-            // ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'root';
-            // FLUSH PRIVILEGES;
-        // MYSQL_SCRIPT>>`);
-    }
-}
-
 /* Refrescar la lista de Dominios */
 if(param('fresh')){
     config('before')();
