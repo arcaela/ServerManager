@@ -2,10 +2,8 @@
 require __DIR__."/autoload.php";
 
 /* Refrescar la lista de Dominios */
+line( param() );
 if(param('fresh')){
-    line(
-        "Hola"
-    );
     exit();
     config('before')();
     line(store(config()->path->pages)->find('*.*')
