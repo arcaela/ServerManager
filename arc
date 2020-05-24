@@ -1,5 +1,8 @@
 #!/bin/bash
+
+context=""
 while [[ $# -gt 0 ]]; do
+    context="$context $1"
     case $1 in
         --server-install)
             install=1
