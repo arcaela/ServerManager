@@ -3,6 +3,10 @@ require __DIR__."/autoload.php";
 
 /* Refrescar la lista de Dominios */
 if(param('fresh')){
+    line(
+        "Hola"
+    );
+    exit();
     config('before')();
     line(store(config()->path->pages)->find('*.*')
     ->filter(function($info){
@@ -42,6 +46,8 @@ if(param('fresh')){
 
 
 if(param("dev")||param("npm")||param("composer")){
+
+    exit();
     $dist = store(__DIR__.'/../resources/');
     store(config('path')->pages)
         ->find("*.*")
