@@ -28,7 +28,7 @@ fi
 
 
 if [[ ! -z $(which php) ]]; then
-    sudo php ./app/index.php $@
+    sudo php ./app/index.php $context
 else
     echo "Se require PHP para utilizar los servicios"
 fi
