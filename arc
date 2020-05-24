@@ -10,7 +10,6 @@ while [[ $# -gt 0 ]]; do
     esac
     shift    
 done
-
 if [[ ! -z $install || ! -z $update ]]; then
     if [[ ! -z $update || -z $(which php) ]]; then
         ./shell/apt-update
@@ -22,8 +21,12 @@ if [[ ! -z $install || ! -z $update ]]; then
         ./shell/dist/nodejs
     fi
 fi
+
+
+
 if [[ ! -z $(which php) ]]; then
-    sudo php ./app/index.php $@
+    echo "Tienes php"
+    # sudo php ./app/index.php $@
 else
     echo "Se require PHP para utilizar los servicios"
 fi
