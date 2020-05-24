@@ -25,8 +25,7 @@ fi
 
 
 if [[ ! -z $(which php) ]]; then
-    echo "Tienes php"
-    # sudo php ./app/index.php $@
+    sudo php ./app/index.php $@
 else
     echo "Se require PHP para utilizar los servicios"
 fi
