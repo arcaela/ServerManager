@@ -10,6 +10,7 @@ return [
         param("remote")?config("tld", null):null;
         line("Procesando...");
         echo Console::run("sudo a2dissite *.conf");
+        echo Console::run("sudo rm -rf /etc/apache2/sites-available/*.conf");
         line(Console::run("sudo systemctl stop apache2"));
     },
     'add'=>function($item){
