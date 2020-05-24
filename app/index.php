@@ -1,7 +1,10 @@
 <?php
-
 require __DIR__."/autoload.php";
 
+
+line("Inside");
+
+exit();
 if(param('install')){
     $all=true;
     /* Install Composer */        
