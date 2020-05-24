@@ -5,7 +5,7 @@ $_PARAMS = collect($_SERVER['argv'])->slice(1)
 ->mapWithKeys(function($v){
     $ex = explode('=',$v);
     return [
-        preg_replace("/^\-+(\w+)/","$1",$ex[0]),
+        preg_replace("/^-([a-zA-Z])$|--(\w{2,})/","$1$2",$ex[0]),
         (count($ex)>1?(
             $ex[1]=='true'?true:(
                 ($ex[1]==''||$ex[1]=='false')?false:(
@@ -33,19 +33,21 @@ $_PARAMS = collect($_SERVER['argv'])->slice(1)
 
 
 // Set $CONFIGS from iOS file
-$_CONFIGS = collect(path(__DIR__.'/ios/')->files()->files)->mapWithKeys(function($path){
-    $key = preg_replace("/.*\/(\w+)\.(\w+)$/","$1",$path);
-    $val = include $path;
+
+$_CONFIGS = store(__DIR__.'/ios')
+->files
+->mapWithKeys(function($path){
+    $key=preg_replace("/.*\/(\w+)\.(\w+)$/","$1",$path);
+    $val=include $path;
     return [ $key, $val, ];
 })
-->then(function(){ $this->active = iOS(); })
+->then(function(){$this->active = iOS();})
 ->native('__invoke',function(...$key){
     $len=count($key);
     if($len==1) return $this[$this->active][$key[0]];
     if($len>=2) return $this->items[$this->active][$key[0]]=$key[1];
     return $this[$this->active];
 });
-
 define('IS_SSL',param('ssl'));
 define('DOMAIN_LIST',(function(){
     $d = array_filter(explode(',',param('domains')));

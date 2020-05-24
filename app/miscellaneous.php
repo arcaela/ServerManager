@@ -1,5 +1,4 @@
 <?php
-
     function param(...$a){ global $_PARAMS; return $_PARAMS(...$a);}
     function config(...$a){ global $_CONFIGS; return $_CONFIGS(...$a);}
     function template(...$a){
@@ -18,8 +17,6 @@
         return null;
     }
 
-
-
     function iOS(...$compare){
         $ios = (false
             ||array_key_exists('WINDIR',$_SERVER)
@@ -31,45 +28,82 @@
     }
     function collect($items){ return new Collection($items); }
 
-    function path($path){
-        $path = preg_replace("/^(.*)(\/|\\\)$/","$1", preg_replace("/(\/|\\\)+/",DIRECTORY_SEPARATOR, $path) );
-        $real = realpath($path);
-        return collect([
-            "path"=>$path,
-            "real"=>!$real?null:array_merge([
-                "path"=>$real,
-            ],pathinfo($real)),
-        ])
-        ->merge(pathinfo($path))
-        ->native('__toString',function(){ return $this->path; })
-        ->macro('go',function($path=''){
-            return $this->__items(
-                path($this->path."/$path")->toArray()
-            );
+
+
+    function store($path=null){
+        $path = preg_replace("/^(.*)(\/|\\\)$/","$1", preg_replace("/(\/|\\\)+/",DIRECTORY_SEPARATOR, ($path??'./')) );
+        return collect(array_merge(
+            ["path"=>$path,],
+            pathinfo($path)
+        ))
+        ->macro('get(real)',function(){
+            $real=realpath($this->path);
+            return $real?store($real):null;
         })
-        ->macro('back',function($level=1){
-            for($i=0;$i<$level;$i++)
-                $this->__items( path($this->dirname)->toArray() );
+        ->native('__toString',function(){ return $this->path; })
+        ->macro('get(getContent)',function(){
+            try {
+                return $this->exist?file_get_contents($this->real->path):'';
+            } catch (\Throwable $th) { exit($th->getMessage()); }
+        })
+        ->macro('get(makeHasFile)',function(){
+            if(!$this->exist) fclose(fopen($this->path,"a"));
+            else if(!$this->isFile) return null;
             return $this;
         })
-        ->macro('glob',function($exp='*'){
-            return collect(array_map('path',glob($this->path."/$exp")));
+        ->macro('get(makeHasDir)',function(){
+            if(!$this->exist) mkdir($this->path."/", 0777, true);
+            else if(!$this->isDir) return null;
+            return $this;
         })
-        ->macro('remove',function(){
+        ->macro('setContent',function($content=''){
+            if(!$this->exist||$this->isFile){
+                try {
+                    $prev=$this->isFile?file_get_contents($this->path):'';
+                    $fn=fopen($this->path,"r+");
+                    ftruncate($fn, 0);
+                    fputs($fn, is_callable($content)?bind($this,$content,$prev):$content);
+                    fclose($fn);
+                } catch (\Throwable $th) {return null;}
+            };
+            return $this;
+        })
+        ->macro('get(unlink)',function(){
             try {
-                if(is_file($this->path) || is_link($this->path)) unlink($this->path);
+                if(is_link($this->path)||is_file($this->path)) unlink($this->path);
                 if(is_dir($this->path)){
-                    $data = $this->files(true);
-                    array_map('unlink', $data->files->toArray());
-                    array_map('rmdir', $data->dir->toArray());
+                    $this->files->map('unlink');
+                    $this->folders->map('rmdir');
                     rmdir($this->path);
                 }
-                return $this->go();
+                return $this->exist?null:$this;
             } catch (\Throwable $th) { return null; }
         })
-        ->macro('files',function($MaxLevel=true){
+        ->macro('and',function($path=''){
+            return preg_replace("/\/+/","/",$this->path."/$path");
+        })
+        ->macro('go',function($path=''){
+            $path = $this->and($path);
+            return $this->__items(array_merge(
+                ["path"=>$path,],
+                pathinfo($path)
+            ));
+        })
+        ->macro('back',function($level=1){
+            for($i=0;$i<$level;$i++){
+                $this->__items(array_merge(
+                    ["path"=>$this->dirname,],
+                    pathinfo($this->dirname)
+                ));
+            }
+            return $this;
+        })
+        ->macro('get(files)', function(){ return $this->scandir(1)->files; })
+        ->macro('get(folders)', function(){ return $this->scandir(1)->folders; })
+        ->macro('scandir',function($MaxLevel=true){
+            if(!is_dir($this->path)) return null;
             if(!function_exists('getFilesPath')){
-                function getFilesPath($path, $level=[0,true], $append=["files"=>[],"dir"=>[]]){
+                function getFilesPath($path, $level=[0,true], $append=["files"=>[],"folders"=>[]]){
                     $allow = ($level[1]===true||$level[0]<$level[1]);
                     if(!$allow) return $append; $level[0]++;
                     if((!is_link($path) && !is_file($path)) && is_dir($path)){
@@ -77,7 +111,7 @@
                             $root = "$path/$dir";
                             if(is_link($root) || is_file($root)) $append["files"][]=$root;
                             else if(is_dir($root)){
-                                array_unshift($append["dir"], "$root");
+                                array_unshift($append["folders"], "$root");
                                 $append = getFilesPath("$root",$level,$append);
                             };
                         }
@@ -87,31 +121,24 @@
             }
             return collect(getFilesPath($this->path, [0,$MaxLevel]));
         })
-        ->macro('create',function($mkdir=''){
-            if(!is_dir($this->path) && !file_exists($this->path)){
-                try {
-                    mkdir($this->path."/$mkdir", 0777, true);
-                    return $this->go();
-                } catch (\Throwable $th) {}
-            }
+        ->macro('find', function($exp='*'){
+            return collect(glob($this->path."/$exp"))->map("store");
+        })
+        ->macro('get(isLink)',function(){return is_link($this->path);})
+        ->macro('get(isFile)',function(){return is_file($this->path);})
+        ->macro('get(isDir)',function(){return is_dir($this->path);})
+        ->macro('get(exist)',function(){return boolval($this->real);})
+        ->macro('linkTo',function($destino,$overwrite=false){
+            try {
+                if($this->exist&&$overwrite) $this->unlink;
+                symlink($destino, $this->path);
+                return $this;
+            } catch (\Throwable $th) { echo $th->getMessage(); }
             return null;
         })
-        ->macro('isFile',function($exp=''){ return (is_file($this->path."/$exp")&&!is_link($this->path."/$exp")); })
-        ->macro('isLink',function($exp=''){ return (is_link($this->path."/$exp")&&!is_file($this->path."/$exp")); })
-        ->macro('isDir',function($exp=''){ return (!is_link($this->path."/$exp")&&!is_file($this->path."/$exp")&&is_dir($this->path)); })
-        ->macro('exists',function($exp=''){ return count(glob($this->path."/$exp")); })
-        ->macro('linkTo',function($destino,$overwrite=false){
-            if($overwrite) $this->remove();
-            try {
-                if(is_file($this->path) || is_link($this->path)) return null;
-                if(!is_dir($this->dirname)) mkdir($this->dirname, 0777, true);
-                $symb = symlink($destino, $this->path);
-                return $this->go();
-            } catch (\Throwable $th) { echo $th->getMessage(); }
-        });
+    ;}
+    function bind($target,$fn,...$arg){
+        return  is_string($fn)?$fn(...$arg):($fn->bindTo($target,$target))(...$arg);
     }
-
-    function call(...$arg){ return bind(...$arg); }
-    function bind($target,$fn,...$arg){ return ($fn->bindTo($target,$target))(...$arg); }
-    function line($text=''){ echo $text."\n"; }
+    function line($text=''){ echo (is_array($text)?json_encode($text, JSON_PRETTY_PRINT):$text)."\n"; }
     function fatal($text=''){ throw new Exception($text); }

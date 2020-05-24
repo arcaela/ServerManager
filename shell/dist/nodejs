@@ -1,0 +1,10 @@
+# NodeJs
+VERSION=v14.3.0
+DISTRO=linux-x64
+wget https://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.xz
+sudo mkdir -p /usr/local/lib/nodejs
+sudo tar -xJvf node-$VERSION-$DISTRO.tar.xz -C /usr/local/lib/nodejs
+sudo rm -rf ./node-$VERSION-$DISTRO.tar.xz
+sudo ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/node /usr/bin/node
+sudo ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npm /usr/bin/npm
+sudo ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npx /usr/bin/npx
