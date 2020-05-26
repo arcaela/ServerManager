@@ -72,8 +72,9 @@
             try {
                 if(is_link($this->path)||is_file($this->path)) unlink($this->path);
                 if(is_dir($this->path)){
-                    $this->files->map('unlink');
-                    $this->folders->map('rmdir');
+                    $scan = $this->scandir(true);
+                    $scan->files->map(function($p){unlink($p);});
+                    $scan->folders->map(function($p){rmdir($p);});
                     rmdir($this->path);
                 }
                 return $this->exist?null:$this;
@@ -131,9 +132,10 @@
         ->macro('linkTo',function($destino,$overwrite=false){
             try {
                 if($this->exist&&$overwrite) $this->unlink;
+                if($this->exist) return null;
                 symlink($destino, $this->path);
                 return $this;
-            } catch (\Throwable $th) { echo $th->getMessage(); }
+            } catch (\Throwable $th) {}
             return null;
         })
     ;}
