@@ -3,14 +3,17 @@
         protected $items;
         protected $macros = [];
         protected $natives = [];
-        public function __construct($items){ $this->items=$items instanceof Collection?$items->toArray():$items; }
-        public function __set($key,$val){ return $this->items[$key]=($val instanceof Collection?$val->toArray():$val); }
+        public function __construct($items){ $this->items=$items instanceof static?$items->toArray():$items; }
+        public function __set($key, $value){
+            if(array_key_exists("set($key)",$this->macros))
+                return bind($this, $this->macros["set($key)"], $value);
+            return $this->items[$key]= $value instanceof static?$value->toArray():$value;
+        }
         public function __get($key){
-            return array_key_exists("get($key)",$this->macros)?bind($this, $this->macros["get($key)"]):(
-                ($val=$this->items[$key]??null)?(
-                    is_array($val)?new static($val):$val
-                ):null
-            );
+            if(array_key_exists("get($key)",$this->macros))
+                return bind($this, $this->macros["get($key)"], $key);
+            $val = is_array($val=$this->items[$key]??null)?new static($val):$val;
+            return $val;
         }
         public function __toString(){
             if(array_key_exists('__toString', $this->natives))
@@ -20,7 +23,7 @@
                 try {
                     if(is_string($item) && preg_match("/^\[|\{/",$item))
                         $item=json_decode($item, true);
-                } catch (\Throwable $th) {}
+                } catch (\Throwable $th) {line($th->getMessage());}
                 return $item;
             },$this->items), JSON_PRETTY_PRINT);
         }

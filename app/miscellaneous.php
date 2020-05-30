@@ -77,14 +77,17 @@
                     $scan->folders->map(function($p){rmdir($p);});
                     rmdir($this->path);
                 }
-                return $this->exist?null:$this;
-            } catch (\Throwable $th) { return null; }
+                return $this->exist?"2":$this;
+            } catch (\Throwable $th) { return $th; }
         })
         ->macro('and',function($path=''){
             return preg_replace("/\/+/","/",$this->path."/$path");
         })
+        ->macro('open',function($path=''){
+            return store(preg_replace("/\/+/","/",$this->path."/$path"));
+        })
         ->macro('go',function($path=''){
-            $path = $this->and($path);
+            $path = preg_replace("/\/+/","/",$this->path."/$path");
             return $this->__items(array_merge(
                 ["path"=>$path,],
                 pathinfo($path)
@@ -131,8 +134,9 @@
         ->macro('get(exist)',function(){return boolval($this->real);})
         ->macro('linkTo',function($destino,$overwrite=false){
             try {
-                if($this->exist&&$overwrite) $this->unlink;
+                if($this->exist&&$overwrite) $this->error = $this->unlink;
                 if($this->exist) return null;
+		$this->makeHasDir; $this->unlink;
                 symlink($destino, $this->path);
                 return $this;
             } catch (\Throwable $th) {}

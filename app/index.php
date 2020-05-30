@@ -40,56 +40,40 @@ if(param('fresh')){
     config('after')();
 }
 
-
 if(param("dev")||param("npm")||param("composer")){
-    $dist = store(__DIR__.'/../resources/');
+    $resources = store(__DIR__.'/../resources/');
     store(config('path')->pages)
         ->find("*.*")
-        ->each(function($site) use(&$dist){
-            $all=(!param("npm")&&!param("composer"));
-            if($dist->find('composer')&&$site->find('composer.json')&&($all||param("composer"))){
-                $all=!param('composer');
-                $dist->go('composer');
-                $file = store($site->and('composer.json'));
-                $vendors = store($site->and('vendor'));
-                if($file->exist){
-                    $content = $file->getContent;
-                    if(!preg_match("/arcaela/",$content)){
-                        $array = json_decode($content, true);
-                        $dist->folders
-                        ->map('store')
-                        ->each(function($plugin)use(&$array){
-                            $array['require']['arcaela/'.$plugin->filename]='dev-master';
-                        });
-                        $file->setContent(str_replace(['\/','": "'],['/','":"'],json_encode($array, JSON_PRETTY_PRINT)));
-                    }
-                }
-                if($vendors->exist)
-                    $vendors->go("arcaela")->linkTo($dist->path, true);
-                $dist->back();
+        ->each(function($site) use(&$resources){
+            $installed=[];
+            
+            if($resources->find('composer')&&$site->find('composer.json')&&(!count($installed)||param("composer"))){
+                $file = $site->open('composer.json');
+                $vendor = $site->open('vendor');
+                $array = json_decode($file->getContent, true);
+                $resources
+                    ->open('composer/')->folders->map('store')
+                    ->each(function($plugin)use(&$array,&$vendor){
+                        $array['require']["arcaela/$plugin->filename"]='dev-master';
+                        if($vendor->open($plugin->filename)->linkTo($plugin->path, true))
+                            line("Instalado: arcaela/$plugin->filename");
+                        else line("No instalado: arcaela/$plugin->filename");
+                    });
+                $file->setContent(str_replace(['\/','": "'],['/','":"'],json_encode($array, JSON_PRETTY_PRINT)));
             }
-
-            if($dist->find('/npm')&&$site->find('package.json')&&($all||param("npm"))){
-                $npm_name="arcaela-npm";
-                $all=!param('npm');
-                $dist->go('npm');
-                $file = store($site->and('package.json'));
-                $modules = store($site->and('node_modules'));
-                if($file->exist){
-                    $content = $file->getContent;
-                    if(!preg_match("/\$npm_name/",$content)){
-                        $array = json_decode($content, true);
-                        $dist->folders
-                        ->map('store')
-                        ->each(function($plugin)use(&$array){
-                            $array['dependencies']["$npm_name/".$plugin->filename]='latest';
-                        });
-                        $file->setContent(str_replace(['\/','": "'],['/','":"'],json_encode($array, JSON_PRETTY_PRINT)));
-                    }
-                }
-                if($modules->exist)
-                    $modules->go($npm_name)->linkTo($dist->path, true);
-                $dist->back();
+            if($resources->find('npm')&&$site->find('package.json')&&(!count($installed)||param("npm"))){
+                $file = $site->open('package.json');
+                $node_modules = $site->open('node_modules');
+                $array = json_decode($file->getContent, true);
+                $resources
+                    ->open('npm/')->folders->map('store')
+                    ->each(function($plugin)use(&$array,&$node_modules){
+                        $array['dependencies'][$plugin->filename]='latest';
+                        if($node_modules->open($plugin->filename)->linkTo($plugin->path, true))
+                            line("Instalado: ".$plugin->filename);
+                        else line("No instalado: ".$plugin->filename);
+                    });
+                $file->setContent(str_replace(['\/','": "'],['/','":"'],json_encode($array, JSON_PRETTY_PRINT)));
             }
         });
 }
