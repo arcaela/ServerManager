@@ -68,25 +68,27 @@ if(param("dev")||param("npm")||param("composer")){
                     $vendors->go("arcaela")->linkTo($dist->path, true);
                 $dist->back();
             }
+
             if($dist->find('/npm')&&$site->find('package.json')&&($all||param("npm"))){
+                $npm_name="arcaela-npm";
                 $all=!param('npm');
                 $dist->go('npm');
                 $file = store($site->and('package.json'));
                 $modules = store($site->and('node_modules'));
                 if($file->exist){
                     $content = $file->getContent;
-                    if(!preg_match("/\@arcaela/",$content)){
+                    if(!preg_match("/\$npm_name/",$content)){
                         $array = json_decode($content, true);
                         $dist->folders
                         ->map('store')
                         ->each(function($plugin)use(&$array){
-                            $array['dependencies']['@arcaela/'.$plugin->filename]='latest';
+                            $array['dependencies']["$npm_name/".$plugin->filename]='latest';
                         });
                         $file->setContent(str_replace(['\/','": "'],['/','":"'],json_encode($array, JSON_PRETTY_PRINT)));
                     }
                 }
                 if($modules->exist)
-                    $modules->go("@arcaela")->linkTo($dist->path, true);
+                    $modules->go($npm_name)->linkTo($dist->path, true);
                 $dist->back();
             }
         });
