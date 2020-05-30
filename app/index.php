@@ -46,7 +46,6 @@ if(param("dev")||param("npm")||param("composer")){
         ->find("*.*")
         ->each(function($site) use(&$resources){
             $installed=[];
-            
             if($resources->find('composer')&&$site->find('composer.json')&&(!count($installed)||param("composer"))){
                 $file = $site->open('composer.json');
                 $vendor = $site->open('vendor');
@@ -55,7 +54,7 @@ if(param("dev")||param("npm")||param("composer")){
                     ->open('composer/')->folders->map('store')
                     ->each(function($plugin)use(&$array,&$vendor){
                         $array['require']["arcaela/$plugin->filename"]='dev-master';
-                        if($vendor->open($plugin->filename)->linkTo($plugin->path, true))
+                        if($vendor->open("arcaela/$plugin->filename")->linkTo($plugin->path, true))
                             line("Instalado: arcaela/$plugin->filename");
                         else line("No instalado: arcaela/$plugin->filename");
                     });
