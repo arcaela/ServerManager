@@ -1,3 +1,5 @@
 vendor/
 .Trash-1000/
 node_modules/
+www/*
+$REC*
