@@ -1,17 +1,20 @@
 #Composer
 echo "Instalacion de Composer: "
 php -r "copy('https://getcomposer.org/installer', './shell/composer-setup.php');"
-sudo php ./shell/composer-setup.php --install-dir=/usr/local/bin --filename=composer
-sudo php -r "unlink('./shell/composer-setup.php');"
-PATH_A='.config/composer'
-PATH_B='.composer'
-if [[ -d "$HOME/$PATH_A" ]]; then
-    CPSRBIN=$PATH_A
-elif [[ -d "$HOME/$PATH_B" ]]; then
-    CPSRBIN=$PATH_B
+php ./shell/composer-setup.php --install-dir=./shell/ --filename=composer
+php -r "unlink('./shell/composer-setup.php');"
+sudo mv ./shell/composer /usr/local/bin/composer
+composer global require laravel/installer
+
+COMPOSER_PATH=
+A="$HOME/.config/composer"
+B="$HOME/.composer"
+if [[ -d "$A" ]]; then
+    COMPOSER_PATH="$A"
+elif [[ -d "$B" ]]; then
+    COMPOSER_PATH="$B"
 fi
-if [[ ! -z $CPSRBIN ]]; then
-    sudo chmod -R 777 "$HOME/$CPSRBIN"
-    composer global require laravel/installer
-    echo 'export PATH=$PATH:'"$HOME/$CPSRBIN" >> ~/.bashrc
+if [[ ! -z $COMPOSER_PATH ]]; then
+    sudo chmod -R 777 $COMPOSER_PATH
+    echo 'export PATH=$PATH:'$COMPOSER_PATH'/vendor/bin' >> ~/.bashrc
 fi
