@@ -42,4 +42,4 @@ if [[ -z $FILEPATH ]]; then
     fi
 fi
 [[ $FILEPATH != $TEMP_FILEPATH ]] && echo "TEMP_FILEPATH=$FILEPATH" >> $CACHE
-ssh $CONTEXT $HOST
+sudo ssh $CONTEXT $HOST
