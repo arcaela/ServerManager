@@ -18,12 +18,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ ! -z $ssh_add_client ]]; then
+    keypath="./shell/ssh/authorized_keys"
     if [[ ! -f "$keypath" ]]; then
         touch $keypath
         echo "authorized_keys : created"
     fi
     sudo nano $keypath
-    keypath="./shell/ssh/authorized_keys"
     for userDir in /home/* ; do
         if [[ $userDir != '/home/lost+found' ]]; then
             if [[ -d "$userDir/.ssh/" ]]; then
