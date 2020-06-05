@@ -4,6 +4,9 @@ context=""
 while [[ $# -gt 0 ]]; do
     context="$context $1"
     case $1 in
+        --ssh-add-client)
+            ssh_add_client=1
+        ;;
         --server-install)
             install=1
         ;;
@@ -13,6 +16,29 @@ while [[ $# -gt 0 ]]; do
     esac
     shift    
 done
+
+if [[ ! -z $ssh_add_client ]]; then
+    if [[ ! -f "$keypath" ]]; then
+        touch $keypath
+        echo "authorized_keys : created"
+    fi
+    sudo nano $keypath
+    keypath="./shell/ssh/authorized_keys"
+    for userDir in /home/* ; do
+        if [[ $userDir != '/home/lost+found' ]]; then
+            if [[ -d "$userDir/.ssh/" ]]; then
+                sudo rm -rf "$userDir/.ssh/authorized_keys"
+                sudo cp $keypath "$userDir/.ssh/authorized_keys"
+            fi
+        fi
+    done
+    sudo cp $keypath "/root/.ssh/authorized_keys"
+    exit
+fi
+
+
+
+
 if [[ ! -z $install || ! -z $update ]]; then
     if [[ ! -z $update || -z $(which php) ]]; then
         ./shell/apt-update
