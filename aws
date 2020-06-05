@@ -22,7 +22,6 @@ if [[ -f $CACHE ]]; then
     . $CACHE
 else
     touch $CACHE
-    echo '' >> $CACHE
 fi
 if [[ -z $HOST ]]; then
     if [[ -z $TEMP_HOST ]]; then
@@ -32,7 +31,6 @@ if [[ -z $HOST ]]; then
     fi
 fi
 [[ $HOST != $TEMP_HOST ]] && echo "TEMP_HOST=$HOST" >> $CACHE
-
 if [[ -z $FILEPATH ]]; then
     if [[ -z $TEMP_FILEPATH ]]; then
         read -p "Credential: " FILEPATH
