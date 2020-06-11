@@ -1,4 +1,5 @@
 #!/bin/bash
+ArcaelaRoot="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 context=""
 while [[ $# -gt 0 ]]; do
@@ -18,7 +19,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ ! -z $ssh_add_client ]]; then
-    keypath="./shell/ssh/authorized_keys"
+    keypath=$ArcaelaRoot"/shell/ssh/authorized_keys"
     if [[ ! -f "$keypath" ]]; then
         touch $keypath
         echo "authorized_keys : created"
@@ -37,24 +38,22 @@ if [[ ! -z $ssh_add_client ]]; then
 fi
 
 
-
-
 if [[ ! -z $install || ! -z $update ]]; then
     if [[ ! -z $update || -z $(which php) ]]; then
-        ./shell/apt-update
+        sudo $ArcaelaRoot"/shell/apt-update"
     fi
     if [[ ! -z $update || -z $(which composer) ]]; then
-        ./shell/dist/composer
+        sudo $ArcaelaRoot"/shell/dist/composer"
     fi
     if [[ ! -z $update || -z $(which node) ]]; then
-        ./shell/dist/nodejs
+        sudo $ArcaelaRoot"/shell/dist/nodejs"
     fi
 fi
 
 
 
 if [[ ! -z $(which php) ]]; then
-    sudo php ./app/index.php $context
+    sudo php $ArcaelaRoot"/app/index.php $context"
 else
     echo "Se require PHP para utilizar los servicios"
 fi
