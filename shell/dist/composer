@@ -4,17 +4,29 @@ php -r "copy('https://getcomposer.org/installer', './shell/composer-setup.php');
 php ./shell/composer-setup.php --install-dir=./shell/ --filename=composer
 php -r "unlink('./shell/composer-setup.php');"
 sudo mv ./shell/composer /usr/local/bin/composer
-composer global require laravel/installer
 
-COMPOSER_PATH=
-A="$HOME/.config/composer"
-B="$HOME/.composer"
-if [[ -d "$A" ]]; then
-    COMPOSER_PATH="$A"
-elif [[ -d "$B" ]]; then
-    COMPOSER_PATH="$B"
+read -p "Escribe tu nombre de usuario: " clientname
+if [[ ! -d "/home/$clientname/" ]]; then
+    echo "El usuario indicado no tiene una ruta predeterminada."
+    read -p "¿Estas seguro de usar $clientname? (Y/n)" cf
+    case $cf in
+        Y|y|S|s)
+            cf=1
+        ;;
+        *)
+            cf=
+        ;;
+    esac
+    if [[ ! -z $cf ]]; then
+        composer global require laravel/installer
+        sudo mkdir -p /home/$clientname/.config/
+        echo 'export PATH=$PATH:/home/'$clientname'/.config/composer/vendor/bin' >> ~/.bashrc
+        sudo mv /root/.composer /home/$clientname/.config/composer
+        laravel help
+    else
+        echo "Se procede a ignorar la instalación de Laravel"
+    fi
 fi
-if [[ ! -z $COMPOSER_PATH ]]; then
-    sudo chmod -R 777 $COMPOSER_PATH
-    echo 'export PATH=$PATH:'$COMPOSER_PATH'/vendor/bin' >> ~/.bashrc
-fi
+
+
+
