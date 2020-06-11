@@ -23,7 +23,6 @@ return [
             ErrorLog logs/error.log
             CustomLog logs/access.log combined
         </VirtualHost>`);
-        line($is_done?'Creado el default':'Error al crear default');
     },
     'add'=>function($item){
         $file=store($this->path['vhosts'].$item->CONF_FILE)->unlink;
