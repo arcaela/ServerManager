@@ -1,6 +1,5 @@
 <?php
 require __DIR__."/autoload.php";
-
 /* Refrescar la lista de Dominios */
 if(param('fresh')){
     config('before')();
