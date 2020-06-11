@@ -17,7 +17,6 @@ while [[ $# -gt 0 ]]; do
     esac
     shift    
 done
-
 if [[ ! -z $ssh_add_client ]]; then
     keypath=$ArcaelaRoot"/shell/ssh/authorized_keys"
     if [[ ! -f "$keypath" ]]; then
