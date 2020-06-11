@@ -9,10 +9,14 @@ if(param('fresh')){
         return in_array($info->basename, DOMAIN_LIST??[$info->basename]);
     })
     ->map(function($info){
+        $alias = $info->filename;
+        $tld = join(".",array_filter(explode('.',param('tld')??config('tld')??$info->extension)));
         return collect([
             'SERVER_ROOT'=>$info->real->path,
             'DOCUMENT_ROOT'=>(store($info->real->path)->find('/public*')[0]??['path'=>$info->real->path])['path'],
-            'DOMAIN_NAME'=>preg_replace('/\.+/', '.', $info->filename.'.'.(param('tld')??config('tld')??$info->extension)),
+            'ALIAS'=>$alias,
+            'TLD'=>$tld,
+            'DOMAIN_NAME'=>"$alias.$tld",
             'CONF_FILE'=>$info->filename.(IS_SSL?'-ssl':'').'.conf',
         ]);
     })
