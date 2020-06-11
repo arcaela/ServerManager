@@ -9,7 +9,7 @@
     DocumentRoot "<DOCUMENT_ROOT>"
     ServerAdmin admin@<DOMAIN_NAME>
     ServerName <DOMAIN_NAME>
-    ServerAlias <DOMAIN_NAME>
+    RewriteCond "%{HTTP_HOST}" <DOMAIN_NAME>
     ErrorLog "logs/<DOMAIN_NAME>-error.log"
     CustomLog "logs/<DOMAIN_NAME>-access.log" common
 </VirtualHost>
