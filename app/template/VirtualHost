@@ -5,11 +5,6 @@
 		AllowOverride All
 		Allow from all
 		Require all granted
-
-        RewriteEngine on
-        RewriteCond %{HTTP_HOST} *!^<ALIAS>\.<TLD> [NC]
-        RewriteRule (.*) https://www.google.com/ [L,R=302]
-
 	</Directory>
     DocumentRoot "<DOCUMENT_ROOT>"
     ServerAdmin admin@<DOMAIN_NAME>
