@@ -23,7 +23,7 @@ return [
     'add'=>function($item){
         $file=store($this->path['vhosts'].$item->CONF_FILE)->unlink;
         $is_done=$file->makeHasFile
-        ->setContent(template((IS_SSL?'ssl':(param('ssl-only')?'ssl-only':'VirtualHost')),$item));
+        ->setContent(template('VirtualHost',$item));
         return $is_done?$item:null;
     },
     'after'=>function(){

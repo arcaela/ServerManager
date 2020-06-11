@@ -1,4 +1,4 @@
-<VirtualHost *:80>
+<VirtualHost <DOMAIN_NAME>:80>
     <Directory "<SERVER_ROOT>">
 		Options FollowSymLinks Indexes
 		AllowOverride All
