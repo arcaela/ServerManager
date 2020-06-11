@@ -27,9 +27,6 @@
         return count($compare)?preg_match("/".$compare[0]."/i",$ios):$ios;
     }
     function collect($items){ return new Collection($items); }
-
-
-
     function store($path=null){
         $path = preg_replace("/^(.*)(\/|\\\)$/","$1", preg_replace("/(\/|\\\)+/",DIRECTORY_SEPARATOR, ($path??'./')) );
         return collect(array_merge(
@@ -148,3 +145,5 @@
     }
     function line($text=''){ echo (is_array($text)?json_encode($text, JSON_PRETTY_PRINT):$text)."\n"; }
     function fatal($text=''){ throw new Exception($text); }
+    function input($key,$opt=''){ return param($key)??config($key)??$opt; }
+    function clean($char='',$str=''){ return join($char, array_filter(explode($char, $str))); }

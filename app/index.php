@@ -10,14 +10,14 @@ if(param('fresh')){
     })
     ->map(function($info){
         $alias = $info->filename;
-        $tld = join(".",array_filter(explode('.',param('tld')??config('tld')??$info->extension)));
+        $tld = clean('.',input('tld',$info->extension));
         return collect([
-            'SERVER_ROOT'=>$info->real->path,
             'DOCUMENT_ROOT'=>(store($info->real->path)->find('/public*')[0]??['path'=>$info->real->path])['path'],
             'ALIAS'=>$alias,
             'TLD'=>$tld,
+            'PORT'=>input('port',80),
             'DOMAIN_NAME'=>"$alias.$tld",
-            'CONF_FILE'=>$info->filename.(IS_SSL?'-ssl':'').'.conf',
+            'CONF_FILE'=>"$info->filename.conf",
         ]);
     })
     ->map(function($item){ return config()->add($item); })->pop()

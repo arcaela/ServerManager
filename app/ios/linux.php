@@ -12,13 +12,20 @@ return [
         echo Console::run("sudo a2dissite *.conf");
         echo Console::run("sudo rm -rf /etc/apache2/sites-available/*.conf");
         line(Console::run("sudo systemctl stop apache2"));
-        // $file = store("/etc/apache2/sites-available/default.conf")->makeHasFile;
-        // $is_done = $file->setContent(template('VirtualHost',[
-            // 'SERVER_ROOT'=>'/var/www/html',
-            // 'DOCUMENT_ROOT'=>'/var/www/html',
-            // 'DOMAIN_NAME'=>'localhost',
-        // ]));
-        // line($is_done?'Creado el default':'Error al crear default');
+        $file = store("/etc/apache2/sites-available/000-default.conf")->makeHasFile;
+        $is_done = $file->setContent(`
+        <VirtualHost *>
+            ServerAdmin admin@localhost
+            DocumentRoot /var/www/html
+            <Directory /var/www/html>
+                Options Indexes
+                    Require all granted
+            </Directory>
+            ErrorLog logs/error.log
+            CustomLog logs/access.log combined
+        </VirtualHost>
+        `);
+        line($is_done?'Creado el default':'Error al crear default');
     },
     'add'=>function($item){
         $file=store($this->path['vhosts'].$item->CONF_FILE)->unlink;

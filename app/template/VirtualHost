@@ -1,4 +1,4 @@
-<VirtualHost *:80>
+<VirtualHost *:<PORT>>
     <Directory "<DOCUMENT_ROOT>">
 		Options FollowSymLinks Indexes
 		Order deny,allow
@@ -6,10 +6,9 @@
 		Allow from all
 		Require all granted
 	</Directory>
-    DocumentRoot "<DOCUMENT_ROOT>"
     ServerAdmin admin@<DOMAIN_NAME>
+    DocumentRoot "<DOCUMENT_ROOT>"
     ServerName <DOMAIN_NAME>
     ErrorLog "logs/<DOMAIN_NAME>-error.log"
     CustomLog "logs/<DOMAIN_NAME>-access.log" common
 </VirtualHost>
-
