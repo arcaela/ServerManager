@@ -13,8 +13,7 @@ return [
         echo Console::run("sudo rm -rf /etc/apache2/sites-available/*.conf");
         line(Console::run("sudo systemctl stop apache2"));
         $file = store("/etc/apache2/sites-available/000-default.conf")->makeHasFile;
-        $is_done = $file->setContent(`
-        <VirtualHost *>
+        $is_done = $file->setContent(`<VirtualHost *>
             ServerAdmin admin@localhost
             DocumentRoot /var/www/html
             <Directory /var/www/html>
@@ -23,8 +22,7 @@ return [
             </Directory>
             ErrorLog logs/error.log
             CustomLog logs/access.log combined
-        </VirtualHost>
-        `);
+        </VirtualHost>`);
         line($is_done?'Creado el default':'Error al crear default');
     },
     'add'=>function($item){
