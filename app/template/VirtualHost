@@ -1,8 +1,4 @@
 <VirtualHost *:80>
-    RewriteEngine on
-    RewriteCond %{HTTP_HOST} *!^<ALIAS>\.<TLD> [NC]
-    RewriteRule (.*) https://www.google.com/ [L,R=302]
-
     <Directory "<DOCUMENT_ROOT>">
 		Options FollowSymLinks Indexes
 		Order deny,allow
@@ -13,6 +9,9 @@
     DocumentRoot "<DOCUMENT_ROOT>"
     ServerAdmin admin@<DOMAIN_NAME>
     ServerName <DOMAIN_NAME>
+    
+    RewriteCond %{SERVER_NAME} !<DOMAIN_NAME>
+    RewriteRule (.*)$ http://my.domain.com$1 [L,R=302]
 
     ErrorLog "logs/<DOMAIN_NAME>-error.log"
     CustomLog "logs/<DOMAIN_NAME>-access.log" common
