@@ -4,6 +4,7 @@
 		Order deny,allow
 		AllowOverride All
 		Allow from all
+		#Require host <DOMAIN_NAME>
 		Require all granted
 	</Directory>
     DocumentRoot "<DOCUMENT_ROOT>"
