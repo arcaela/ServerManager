@@ -1,11 +1,12 @@
 <VirtualHost *:80>
     <Directory "<DOCUMENT_ROOT>">
 		Options FollowSymLinks Indexes
-		AllowOverride All
 		Order deny,allow
+        
+		AllowOverride All
 		Allow from all
-		#Require all granted
-		Require host <DOMAIN_NAME>
+		Require host "<DOMAIN_NAME>"
+        
 	</Directory>
     DocumentRoot "<DOCUMENT_ROOT>"
     ServerAdmin admin@<DOMAIN_NAME>
