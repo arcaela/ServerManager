@@ -12,15 +12,7 @@ return [
         echo Console::run("sudo a2dissite *.conf");
         echo Console::run("sudo rm -rf /etc/apache2/sites-available/*.conf");
         line(Console::run("sudo systemctl stop apache2"));
-        $file = store("/etc/apache2/sites-available/000-default.conf")->makeHasFile;
-        $is_done = $file->setContent(`<VirtualHost *:80>
-            ServerAdmin admin@localhost
-            DocumentRoot /var/www
-            <Directory /var/www>
-                Options Indexes
-                    Require all granted
-            </Directory>
-        </VirtualHost>`);
+
     },
     'add'=>function($item){
         $file=store($this->path['vhosts'].$item->CONF_FILE)->unlink;
