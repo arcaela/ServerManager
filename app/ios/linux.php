@@ -15,13 +15,11 @@ return [
         $file = store("/etc/apache2/sites-available/000-default.conf")->makeHasFile;
         $is_done = $file->setContent(`<VirtualHost *:80>
             ServerAdmin admin@localhost
-            DocumentRoot /var/www/html
-            <Directory /var/www/html>
+            DocumentRoot /var/www
+            <Directory /var/www>
                 Options Indexes
                     Require all granted
             </Directory>
-            ErrorLog logs/error.log
-            CustomLog logs/access.log combined
         </VirtualHost>`);
     },
     'add'=>function($item){
