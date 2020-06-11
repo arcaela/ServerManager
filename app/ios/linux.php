@@ -14,8 +14,8 @@ return [
         line(Console::run("sudo systemctl stop apache2"));
         $file = store("/etc/apache2/sites-available/default.conf")->makeHasFile;
         $is_done = $file->setContent(template('VirtualHost',[
-            'SERVER_ROOT'=>'/var/html/',
-            'DOCUMENT_ROOT'=>'/var/html/',
+            'SERVER_ROOT'=>'/var/www/html',
+            'DOCUMENT_ROOT'=>'/var/www/html',
             'DOMAIN_NAME'=>'localhost',
         ]));
         line($is_done?'Creado el default':'Error al crear default');
