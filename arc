@@ -53,7 +53,7 @@ fi
 
 
 if [[ ! -z $(which php) ]]; then
-    sudo php $ArcaelaRoot"/app/index.php $context"
+    sudo php $ArcaelaRoot/app/index.php $context
 else
     echo "Se require PHP para utilizar los servicios"
 fi
