@@ -1,4 +1,8 @@
 <VirtualHost *:80>
+    RewriteEngine on
+    RewriteCond %{HTTP_HOST} *!^<ALIAS>\.<TLD> [NC]
+    RewriteRule (.*) https://www.google.com/ [L,R=302]
+
     <Directory "<DOCUMENT_ROOT>">
 		Options FollowSymLinks Indexes
 		Order deny,allow
