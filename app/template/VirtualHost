@@ -2,7 +2,6 @@
     <Directory "<DOCUMENT_ROOT>">
 		Options FollowSymLinks Indexes
 		Order deny,allow
-        
 		AllowOverride All
 		Allow from all
 		#Require host <DOMAIN_NAME>
