@@ -1,5 +1,5 @@
-<VirtualHost <DOMAIN_NAME>:80>
-    <Directory "<SERVER_ROOT>">
+<VirtualHost *:80>
+    <Directory "<DOCUMENT_ROOT>">
 		Options FollowSymLinks Indexes
 		AllowOverride All
 		Order deny,allow
