@@ -57,7 +57,7 @@
             if(!$this->exist||$this->isFile){
                 try {
                     $prev=$this->isFile?file_get_contents($this->path):'';
-                    $fn=fopen($this->path,"r+");
+                    $fn=fopen($this->path,"a");
                     ftruncate($fn, 0);
                     fputs($fn, is_callable($content)?bind($this,$content,$prev):$content);
                     fclose($fn);
@@ -99,10 +99,10 @@
             }
             return $this;
         })
-        ->macro('get(files)', function(){ return $this->scandir(1)->files; })
-        ->macro('get(folders)', function(){ return $this->scandir(1)->folders; })
+        ->macro('get(files)', function(){ return $this->scandir(1)->files??collect([]); })
+        ->macro('get(folders)', function(){ return $this->scandir(1)->folders??collect([]); })
         ->macro('scandir',function($MaxLevel=true){
-            if(!is_dir($this->path)) return null;
+            if(!is_dir($this->path)) return (Object)[];
             if(!function_exists('getFilesPath')){
                 function getFilesPath($path, $level=[0,true], $append=["files"=>[],"folders"=>[]]){
                     $allow = ($level[1]===true||$level[0]<$level[1]);
