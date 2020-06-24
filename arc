@@ -1,58 +1,63 @@
 #!/bin/bash
-ArcaelaRoot="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source $HOME/.bashrc
 
+base_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 context=""
 while [[ $# -gt 0 ]]; do
     context="$context $1"
     case $1 in
-        --ssh-add-client)
-            ssh_add_client=1
+        --ssh-add)
+            workspace="ssh"
+            action="add_client"
         ;;
         --server-install)
-            install=1
-        ;;
-        --server-update)
-            update=1
+            workspace="server"
+            action="install"
         ;;
     esac
     shift    
 done
-if [[ ! -z $ssh_add_client ]]; then
-    keypath=$ArcaelaRoot"/shell/ssh/authorized_keys"
-    if [[ ! -f "$keypath" ]]; then
-        touch $keypath
-        echo "authorized_keys : created"
-    fi
-    sudo nano $keypath
-    for userDir in /home/* ; do
-        if [[ $userDir != '/home/lost+found' ]]; then
-            if [[ -d "$userDir/.ssh/" ]]; then
-                sudo rm -rf "$userDir/.ssh/authorized_keys"
-                sudo cp $keypath "$userDir/.ssh/authorized_keys"
-            fi
+
+case $workspace in
+    #ssh
+    ssh)
+        case $action in
+            #add_client
+            add_client)
+                ssh_path=$HOME"/.ssh"
+                authorized_keys=$ssh_path"/authorized_keys"
+                touch $authorized_keys
+                read -p "SSH Key: " ssh_client
+                echo $ssh_client >> $authorized_keys
+            ;;
+            #add_client
+        esac
+    ;;
+    #ssh
+    #server
+    server)
+        case $action in
+            install)
+                if [[ -z $(which php) ]]; then
+                    sudo $base_path"/shell/apt-update"
+                fi
+                if [[ -z $(which composer) ]]; then
+                    sudo $base_path"/shell/dist/composer"
+                fi
+                if [[ -z $(which node) ]]; then
+                    sudo $base_path"/shell/dist/nodejs"
+                fi
+            ;;
+        esac
+    ;;
+    #server
+    #Default
+    *)
+        if [[ ! -z $(which php) ]]; then
+            sudo php $base_path/app/index.php --server-path=$base_path $context
+        else
+            echo "Se require PHP para utilizar los servicios"
         fi
-    done
-    sudo cp $keypath "/root/.ssh/authorized_keys"
-    exit
-fi
-
-
-if [[ ! -z $install || ! -z $update ]]; then
-    if [[ ! -z $update || -z $(which php) ]]; then
-        sudo $ArcaelaRoot"/shell/apt-update"
-    fi
-    if [[ ! -z $update || -z $(which composer) ]]; then
-        sudo $ArcaelaRoot"/shell/dist/composer"
-    fi
-    if [[ ! -z $update || -z $(which node) ]]; then
-        sudo $ArcaelaRoot"/shell/dist/nodejs"
-    fi
-fi
-
-
-
-if [[ ! -z $(which php) ]]; then
-    sudo php $ArcaelaRoot/app/index.php --server-path=$ArcaelaRoot $context
-else
-    echo "Se require PHP para utilizar los servicios"
-fi
+    ;;
+    #Default
+esac
