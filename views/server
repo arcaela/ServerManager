@@ -13,13 +13,11 @@ case $action in
         [[ ! -d $web_path ]] && mkdir $web_path
         [[ ! -d $temp_path ]] && mkdir $temp_path
 
-
         current_version=$server_version
         echo "Buscando actualizaciones..."
         wget -qO $temp_path/about https://raw.githubusercontent.com/$server_git/master/.env
         eval $(cat $temp_path/about | grep "server_version=")
-        # if [[ $current_version < $server_version ]]; then
-        if [[ $current_version < 2.1 ]]; then
+        if [[ $current_version < $server_version ]]; then
             wget -qO $temp_path/server.zip https://github.com/$server_git/archive/master.zip
             unzip -qq $temp_path/server.zip -d $temp_path
             cp -r $temp_path/$server_name-master $base_path
