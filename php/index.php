@@ -1,5 +1,9 @@
 <?php
 require __DIR__."/autoload.php";
+
+
+
+
 /* Refrescar la lista de Dominios */
 if(param('fresh')){
     config('before')();
@@ -42,6 +46,9 @@ if(param('fresh')){
     })?'Dominios Registrados':'No pudimos registrar los nombres de dominios');
     config('after')();
 }
+
+
+
 
 if(param("dev")||param("npm")||param("composer")){
     $resources = store(__DIR__.'/../resources/');

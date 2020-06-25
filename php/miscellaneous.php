@@ -1,12 +1,18 @@
 <?php
     function param(...$a){ global $_PARAMS; return $_PARAMS(...$a);}
     function config(...$a){ global $_CONFIGS; return $_CONFIGS(...$a);}
+    function line($text=''){ echo (is_array($text)?json_encode($text, JSON_PRETTY_PRINT):$text)."\n"; }
+    function fatal($text=''){ throw new Exception($text); }
+    function input($key,$opt=''){ return param($key)??config($key)??$opt; }
+    function clean($char='',$str=''){ return join($char, array_filter(explode($char, $str))); }
+    function collect($items){ return new Collection($items); }
+    function bind($target,$fn,...$arg){
+        return  is_string($fn)?$fn(...$arg):($fn->bindTo($target,$target))(...$arg);
+    }
     function template(...$a){
         if(count($a)){
             $merge = (count($a)>1)?(
-                is_array($a[1])?$a[1]:(
-                    $a[1] instanceof Collection?($a[1])->toArray():[]
-                )
+                is_array($a[1])?$a[1]:( $a[1] instanceof Collection?($a[1])->toArray():[] )
             ):[];
             return str_replace(
                 array_map(function($k){ return "<$k>";},array_keys($merge)),
@@ -16,7 +22,6 @@
         }
         return null;
     }
-
     function iOS(...$compare){
         $ios = (false
             ||array_key_exists('WINDIR',$_SERVER)
@@ -26,7 +31,8 @@
         )?'windows':'linux';
         return count($compare)?preg_match("/".$compare[0]."/i",$ios):$ios;
     }
-    function collect($items){ return new Collection($items); }
+
+
     function store($path=null){
         $path = preg_replace("/^(.*)(\/|\\\)$/","$1", preg_replace("/(\/|\\\)+/",DIRECTORY_SEPARATOR, ($path??'./')) );
         return collect(array_merge(
@@ -133,17 +139,10 @@
             try {
                 if($this->exist&&$overwrite) $this->error = $this->unlink;
                 if($this->exist) return null;
-		$this->makeHasDir; $this->unlink;
+		        $this->makeHasDir; $this->unlink;
                 symlink($destino, $this->path);
                 return $this;
             } catch (\Throwable $th) {}
             return null;
         })
     ;}
-    function bind($target,$fn,...$arg){
-        return  is_string($fn)?$fn(...$arg):($fn->bindTo($target,$target))(...$arg);
-    }
-    function line($text=''){ echo (is_array($text)?json_encode($text, JSON_PRETTY_PRINT):$text)."\n"; }
-    function fatal($text=''){ throw new Exception($text); }
-    function input($key,$opt=''){ return param($key)??config($key)??$opt; }
-    function clean($char='',$str=''){ return join($char, array_filter(explode($char, $str))); }

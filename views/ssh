@@ -1,0 +1,14 @@
+#!/bin/bash
+
+
+case $action in
+    #add_client
+    add_client)
+        ssh_path=$HOME"/.ssh"
+        authorized_keys=$ssh_path"/authorized_keys"
+        touch $authorized_keys
+        read -p "SSH Key: " ssh_client
+        echo $ssh_client >> $authorized_keys
+    ;;
+    #add_client
+esac

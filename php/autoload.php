@@ -1,4 +1,10 @@
 <?php
+spl_autoload_register(function($class){
+    if(file_exists(__DIR__."/class/$class.php"))
+        include __DIR__."/class/$class.php";
+});
+include __DIR__.'/miscellaneous.php';
+
 
 // Setting arguments of console
 $_PARAMS = collect($_SERVER['argv'])->slice(1)
@@ -30,10 +36,7 @@ $_PARAMS = collect($_SERVER['argv'])->slice(1)
         if(is_string($key)) return $this->items[$key]=$val;
     }
 });
-
-
 // Set $CONFIGS from iOS file
-
 $_CONFIGS = store(__DIR__.'/ios')
 ->files
 ->mapWithKeys(function($path){

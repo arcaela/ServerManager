@@ -1,0 +1,24 @@
+#!/bin/bash
+cd $web_path
+
+
+case $action in
+    --react-app | --react-project)
+        for name in $@
+        do
+            [[ $(is_dir "$web_path/$name") && $(confirm "¿Deseas eliminar $name?" Y) ]] && delete "$web_path/$name"
+            if [[ ! $(is_dir "$web_path/$name") ]]; then
+                npx create"${action[@]:1}" $name
+            fi
+        done
+    ;;
+    --laravel-app)
+        for name in $@
+        do
+            [[ $(is_dir "$web_path/$name") && $(confirm "¿Deseas eliminar $name?" Y) ]] && delete "$web_path/$name"
+            if [[ ! $(is_dir "$web_path/$name") ]]; then
+                composer create-project --prefer-dist laravel/laravel $name
+            fi
+        done
+    ;;
+esac
