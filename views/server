@@ -20,10 +20,15 @@ case $action in
         wget -qO $temp_path/about https://raw.githubusercontent.com/$server_git/master/.env
         eval $(cat $temp_path/about | grep "server_version=")
         if [[ $current_version < $server_version ]]; then
-            wget -qO $temp_path/server.zip https://github.com/$server_git/archive/master.zip
-            unzip -qq $temp_path/server.zip -d $temp_path
-            cd $temp_path/$server_name-master/
-            find -exec mv {} $base_path/ +
+            echo "Nueva versión [$current_version < $server_version]"
+            if [[ $(confirm "¿Deseas descargarla?" Y) ]]; then
+                echo "Descargando..."
+                wget -qO $temp_path/server.zip https://github.com/$server_git/archive/master.zip
+                unzip -qq $temp_path/server.zip -d $temp_path
+                cd $temp_path/$server_name-master/
+                ls -la
+            fi
+            # find -exec mv {} $base_path/ +
         fi
 
         # rm -rf $temp_path
