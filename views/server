@@ -15,14 +15,14 @@ case $action in
         [[ ! -d $temp_path ]] && mkdir $temp_path
         current_version=$server_version
         echo "Buscando actualizaciones..."
-        wget -O $temp_path/version --no-cache https://raw.githubusercontent.com/arcaela/PHPSiteManager/master/.env
+        wget -qO $temp_path/version https://raw.githubusercontent.com/$server_git/master/.env
         eval $(cat $temp_path/version | grep server_version=)
         if [[ $current_version < $server_version ]]; then
             echo "Nueva versión [$current_version < $server_version]"
             if [[ $(confirm "¿Deseas descargarla?" N) ]]; then
                 echo "Descargando..."
                 wget -qO $temp_path/server.zip https://github.com/$server_git/archive/master.zip
-                unzip -qq $temp_path/server.zip -d $temp_path
+                unzip -qq $temp_path/server.zip -d $temp_path/
                 # rsync -r $temp_path/$server_name-master/ $base_path
             fi
         else
