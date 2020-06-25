@@ -15,11 +15,8 @@ case $action in
         [[ ! -d $temp_path ]] && mkdir $temp_path
         current_version=$server_version
         echo "Buscando actualizaciones..."
-        cd $temp_path
-        wget --no-cache https://raw.githubusercontent.com/$server_git/master/.env
-        cd $base_path
-        eval $(cat $temp_path/.env | grep server_version=)
-
+        wget -qO - https://raw.githubusercontent.com/$server_git/master/.env >$temp_path/about
+        eval $(cat $temp_path/about | grep server_version=)
         if [[ $current_version < $server_version ]]; then
             echo "Nueva versión [$current_version < $server_version]"
             if [[ $(confirm "¿Deseas descargarla?" N) ]]; then
