@@ -25,7 +25,7 @@ case $action in
                 echo "Descargando..."
                 wget -qO $temp_path/server.zip https://github.com/$server_git/archive/master.zip
                 unzip -qq $temp_path/server.zip -d $temp_path
-                # rsync $temp_path/$server_name-master/ $base_path
+                rsync -vnr $temp_path/$server_name-master/ $base_path
             fi
         else
             echo "El servidor está actualizado [$current_version]"
