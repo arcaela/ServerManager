@@ -13,8 +13,6 @@ case $action in
         [[ ! -d $views_path ]] && mkdir $views_path
         [[ ! -d $web_path ]] && mkdir $web_path
         [[ ! -d $temp_path ]] && mkdir $temp_path
-
-
         current_version=$server_version
         echo "Buscando actualizaciones..."
         wget -qO $temp_path/about https://raw.githubusercontent.com/$server_git/master/.env
@@ -23,15 +21,14 @@ case $action in
             echo "Nueva versión [$current_version < $server_version]"
             if [[ $(confirm "¿Deseas descargarla?" N) ]]; then
                 echo "Descargando..."
-                wget -qO $temp_path/server.zip https://github.com/$server_git/archive/master.zip
+                wget -qO $temp_path/server.zip --no-cache https://github.com/$server_git/archive/master.zip
                 unzip -qq $temp_path/server.zip -d $temp_path
-                rsync -vnr $temp_path/$server_name-master/ $base_path
+                rsync -r $temp_path/$server_name-master/ $base_path
             fi
         else
             echo "El servidor está actualizado [$current_version]"
         fi
-
-        # rm -rf $temp_path
+        rm -rf $temp_path
     ;;
 
     # --server-install)
