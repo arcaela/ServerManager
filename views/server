@@ -28,6 +28,8 @@ case $action in
                 cd $temp_path/$server_name-master/
                 find -exec mv {} $base_path/ +
             fi
+        else
+            echo "El servidor está actualizado [$current_version]"
         fi
 
 
