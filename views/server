@@ -31,8 +31,7 @@ case $action in
             echo "El servidor está actualizado [$current_version]"
         fi
 
-
-        rm -rf $temp_path
+        # rm -rf $temp_path
     ;;
 
     # --server-install)
