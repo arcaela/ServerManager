@@ -3,14 +3,12 @@ composer_bin="/usr/local/bin/composer"
 composer_home="$bin_path/composer"
 mkdir -p $composer_home
 sudo chmod -R 777 $composer_home
-if [[ ! -f "/etc/profile.d/ArcServer.sh" ]]; then
-    sudo touch "/etc/profile.d/ArcServer.sh"
-    sudo echo "export COMPOSER_HOME=$composer_home/" >> /etc/profile.d/ArcServer.sh
-    sudo echo "export CGR_BASE_DIR=$composer_home/global" >> /etc/profile.d/ArcServer.sh
-    sudo echo "export CGR_BIN_DIR=$composer_home/vendor/bin" >> /etc/profile.d/ArcServer.sh
-    sudo echo "export CGR_BIN_DIR=$composer_home/vendor/bin" >> /etc/profile.d/ArcServer.sh
-    sudo echo 'export PATH=$PATH:'"$composer_home/vendor/bin" >> /etc/profile.d/ArcServer.sh
-    sudo chmod -R 777 /etc/profile.d/ArcServer.sh
+if [[ ! -z $COMPOSER_HOME ]]; then
+    sudo echo "export COMPOSER_HOME=$composer_home/" >> /etc/bashrc
+    sudo echo "export CGR_BASE_DIR=$composer_home/global" >> /etc/bashrc
+    sudo echo "export CGR_BIN_DIR=$composer_home/vendor/bin" >> /etc/bashrc
+    sudo echo "export CGR_BIN_DIR=$composer_home/vendor/bin" >> /etc/bashrc
+    sudo echo 'export PATH=$PATH:'"$composer_home/vendor/bin" >> /etc/bashrc
     export COMPOSER_HOME="$composer_home/"
     export CGR_BASE_DIR="$composer_home/global"
     export CGR_BIN_DIR="$composer_home/vendor/bin"
