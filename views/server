@@ -24,6 +24,7 @@ case $action in
         else
             echo "El servidor está actualizado [$current_version]"
         fi
+        delete $temp_path
     ;;
     --server-install)
         # if [[ -z $(which php) || -z $(which mysql) ]]; then
@@ -39,5 +40,6 @@ case $action in
         # if [[ -z $(which composer) ]]; then
             source $script_path/composer
         # fi
+        delete $temp_path
     ;;
 esac

@@ -1,4 +1,6 @@
 bin/
+resources/
 temp/
+web/
 .Trash-1000/
 $REC*
