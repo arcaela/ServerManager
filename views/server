@@ -1,16 +1,20 @@
 #!/bin/bash
 cd $base_path
 
-
 case $action in
     --server-upgrade)
-        current_version=$server_version
         echo "Buscando actualizaciones..."
         download -o $temp_path/version https://raw.githubusercontent.com/$server_git/master/.env
-        eval $(cat $temp_path/version | grep server_version=)
-        if [[ $current_version < $server_version ]]; then
+        current_version=$server_version
+        nversion=$(cat $temp_path/version | grep server_version=)
+        [[ -z $nversion ]] && eval $nversion
+        if [[ -z $nversion && $(confirm "¿Reintentar descarga?" Y) ]]; then
+            view server
+        elif [[ -z $nversion ]]; then
+            echo "El servidor no se actualizara"
+        elif [[ $current_version < $server_version ]]; then
             echo "Nueva versión [$current_version a $server_version]"
-            if [[ $(confirm "¿Deseas descargarla?" N) ]]; then
+            if [[ $(confirm "¿Deseas descargarla?" Y) ]]; then
                 download -o $temp_path/server.zip https://github.com/$server_git/archive/master.zip
                 unzip -qq $temp_path/server.zip -d $temp_path/
                 merge_dir $temp_path/$server_name-master/ $base_path
