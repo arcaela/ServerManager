@@ -2,7 +2,7 @@
 composer_bin="/usr/local/bin/composer"
 composer_home="$bin_path/composer"
 mkdir -p $composer_home
-sudo chmod -R $composer_home
+sudo chmod -R 777 $composer_home
 
 if [[ ! $(which composer) && $(confirm "¿Instalar composer?" Y) ]]; then
     echo "Descargando..."
