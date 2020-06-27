@@ -1,9 +1,11 @@
 #!/bin/bash
+source /etc/bashrc
+
 composer_bin="/usr/local/bin/composer"
 composer_home="$bin_path/composer"
 mkdir -p $composer_home
 sudo chmod -R 777 $composer_home
-if [[ ! -z $COMPOSER_HOME ]]; then
+if [[ -z $COMPOSER_HOME ]]; then
     sudo echo "export COMPOSER_HOME=$composer_home/" >> /etc/bashrc
     sudo echo "export CGR_BASE_DIR=$composer_home/global" >> /etc/bashrc
     sudo echo "export CGR_BIN_DIR=$composer_home/vendor/bin" >> /etc/bashrc
