@@ -26,6 +26,7 @@ if [[ ! $(which composer) && $(confirm "¿Instalar composer?" Y) ]]; then
 fi
 if [[ $(which composer) && ! $(exist $composer_home/vendor/bin/laravel) ]]; then
     echo "## Laravel"
+    sudo chmod -R 777 $composer_home
     export COMPOSER_HOME=$composer_home/
     export CGR_BASE_DIR=$composer_home/global
     export CGR_BIN_DIR=$composer_home/vendor/bin
