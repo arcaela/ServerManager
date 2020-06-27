@@ -11,7 +11,6 @@ case $action in
         if [[ $current_version < $server_version ]]; then
             echo "Nueva versión [$current_version a $server_version]"
             if [[ $(confirm "¿Deseas descargarla?" N) ]]; then
-                echo "Descargando..."
                 download -o $temp_path/server.zip https://github.com/$server_git/archive/master.zip
                 unzip -qq $temp_path/server.zip -d $temp_path/
                 merge_dir $temp_path/$server_name-master/ $base_path
