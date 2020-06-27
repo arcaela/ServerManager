@@ -23,7 +23,7 @@ case $action in
             echo "El servidor está actualizado [$current_version]"
         fi
         action="--server-install"
-        build server
+        view server
         delete $temp_path
     ;;
     --server-install)
