@@ -19,11 +19,11 @@ case $action in
                 unzip -qq $temp_path/server.zip -d $temp_path/
                 merge_dir $temp_path/$server_name-master/ $base_path
             fi
-            action="--server-install"
-            build server
         else
             echo "El servidor está actualizado [$current_version]"
         fi
+        action="--server-install"
+        build server
         delete $temp_path
     ;;
     --server-install)
