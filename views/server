@@ -4,42 +4,37 @@ cd $base_path
 
 case $action in
     --server-upgrade)
-        rm -rf $temp_path
-        [[ -d "www" ]] && mv www $web_path
-        [[ ! -d $amazon_path ]] && mkdir $amazon_path
-        [[ ! -d $php_path ]] && mkdir $php_path
-        [[ ! -d $resources_path ]] && mkdir $resources_path
-        [[ ! -d $script_path ]] && mkdir $script_path
-        [[ ! -d $views_path ]] && mkdir $views_path
-        [[ ! -d $web_path ]] && mkdir $web_path
-        [[ ! -d $temp_path ]] && mkdir $temp_path
         current_version=$server_version
         echo "Buscando actualizaciones..."
-        wget -qO $temp_path/version https://raw.githubusercontent.com/$server_git/master/.env
+        download -o $temp_path/version https://raw.githubusercontent.com/$server_git/master/.env
         eval $(cat $temp_path/version | grep server_version=)
         if [[ $current_version < $server_version ]]; then
-            echo "Nueva versión [$current_version < $server_version]"
+            echo "Nueva versión [$current_version a $server_version]"
             if [[ $(confirm "¿Deseas descargarla?" N) ]]; then
                 echo "Descargando..."
-                wget -qO $temp_path/server.zip https://github.com/$server_git/archive/master.zip
+                download -o $temp_path/server.zip https://github.com/$server_git/archive/master.zip
                 unzip -qq $temp_path/server.zip -d $temp_path/
-                rsync -r $temp_path/$server_name-master/ $base_path
+                merge_dir $temp_path/$server_name-master/ $base_path
             fi
+            action="--server-install"
+            build server
         else
             echo "El servidor está actualizado [$current_version]"
         fi
-        rm -rf $temp_path
     ;;
-
-    # --server-install)
-        # if [[ -z $(which php) ]]; then
-            # sudo $base_path"/shell/apt-update"
+    --server-install)
+        # if [[ -z $(which php) || -z $(which mysql) ]]; then
+            # if ! grep -q "^deb .*ondrej/php" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
+                # sudo add-apt-repository ppa:ondrej/php -y
+            # fi
+            # sudo apt-get install -y software-properties-common git apache2 mysql-server php7.4 php-pear php7.4-curl php7.4-dev php7.4-gd php7.4-mbstring php7.4-zip php7.4-mysql php7.4-xml
+            # sudo apt-get upgrade -y
         # fi
+        # quiet sudo a2enmod rewrite
+        # sudo mkdir -p /etc/apache2/logs/
+        # quiet systemctl restart apache2
         # if [[ -z $(which composer) ]]; then
-            # sudo $base_path"/shell/dist/composer"
+            source $script_path/composer
         # fi
-        # if [[ -z $(which node) ]]; then
-            # sudo $base_path"/shell/dist/nodejs"
-        # fi
-    # ;;
+    ;;
 esac

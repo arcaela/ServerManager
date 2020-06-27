@@ -6,7 +6,7 @@ case $1 in
     --react-app | --react-project | --laravel-app)
         build app
     ;;
-    --server-upgrade)
+    --server-upgrade|--server-install)
         build server
     ;;
     # default:
