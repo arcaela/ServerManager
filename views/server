@@ -3,43 +3,45 @@ cd $base_path
 
 case $action in
     --server-upgrade)
-        echo "Buscando actualizaciones..."
-        download -o $temp_path/version https://raw.githubusercontent.com/$server_git/master/.env
-        current_version=$server_version
+        echo 'Buscando actualizaciones...'
+        wget -O $temp_path/version https://raw.githubusercontent.com/$server_git/master/.env -q
         nversion=$(cat $temp_path/version | grep server_version=)
-        [[ -z $nversion ]] && eval $nversion
-        if [[ -z $nversion && $(confirm "¿Reintentar descarga?" Y) ]]; then
-            view server
-        elif [[ -z $nversion ]]; then
-            echo "El servidor no se actualizara"
-        elif [[ $current_version < $server_version ]]; then
-            echo "Nueva versión [$current_version a $server_version]"
+        nversion="${nversion[@]:$(echo `expr index "$nversion" =`)}"
+        if [[ -z $nversion ]]; then
+            if [[ $(confirm "¿Reintentar descarga?" Y) ]]; then
+                source $views_path/server
+            else
+                echo "El servidor no se actualizara"
+            fi
+        elif (( $(echo "$server_version < $nversion" | bc -l) )); then
+            echo "Nueva versión [$server_version a $nversion]"
             if [[ $(confirm "¿Deseas descargarla?" Y) ]]; then
-                download -o $temp_path/server.zip https://github.com/$server_git/archive/master.zip
+                wget -O $temp_path/server.zip https://github.com/$server_git/archive/master.zip
                 unzip -qq $temp_path/server.zip -d $temp_path/
                 merge_dir $temp_path/$server_name-master/ $base_path
             fi
-        else
-            echo "El servidor está actualizado [$current_version]"
+        elif (( $(echo "$server_version >= $nversion" | bc -l) )); then
+            echo "El servidor está actualizado [$server_version]"
         fi
         action="--server-install"
-        view server
-        delete $temp_path
+        source $views_path/server
     ;;
     --server-install)
-        # if [[ -z $(which php) || -z $(which mysql) ]]; then
-            # if ! grep -q "^deb .*ondrej/php" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
-                # sudo add-apt-repository ppa:ondrej/php -y
-            # fi
-            # sudo apt-get install -y software-properties-common git apache2 mysql-server php7.4 php-pear php7.4-curl php7.4-dev php7.4-gd php7.4-mbstring php7.4-zip php7.4-mysql php7.4-xml
-            # sudo apt-get upgrade -y
-        # fi
-        # quiet sudo a2enmod rewrite
-        # sudo mkdir -p /etc/apache2/logs/
-        # quiet systemctl restart apache2
-        # if [[ -z $(which composer) ]]; then
+        if [[ ! $(which php) || ! $(which mysql) ]]; then
+            if ! grep -q "^deb .*ondrej/php" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
+                sudo add-apt-repository ppa:ondrej/php -y
+            fi
+            sudo apt-get install -y software-properties-common git apache2 mysql-server php7.4 php-pear php7.4-curl php7.4-dev php7.4-gd php7.4-mbstring php7.4-zip php7.4-mysql php7.4-xml
+            sudo apt-get upgrade -y
+            sudo mkdir -p /etc/apache2/logs/
+            quiet sudo a2enmod rewrite
+            quiet systemctl restart apache2
+        fi
+        if [[ ! $(which composer) ]]; then
             source $script_path/composer
-        # fi
-        delete $temp_path
+        fi
+        if [[ ! $(which node) ]]; then
+            source $script_path/nodejs
+        fi
     ;;
 esac

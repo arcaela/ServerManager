@@ -1,13 +1,13 @@
-# NodeJs
-VERSION=v14.3.0
-DISTRO=linux-x64
-wget https://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.xz
-sudo mkdir -p /usr/local/lib/nodejs
-sudo chmod -R 777 /usr/local/lib/nodejs
+#!/bin/bash
+nodejs_home="$bin_path/nodejs"
 
-sudo tar -xJvf node-$VERSION-$DISTRO.tar.xz -C /usr/local/lib/nodejs
-sudo rm -rf ./node-$VERSION-$DISTRO.tar.xz
-
-sudo ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/node /usr/bin/node
-sudo ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npm /usr/bin/npm
-sudo ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npx /usr/bin/npx
+VERSION="v14.5.0"
+DISTRO="linux-x64"
+if [[ ! -f "$temp_path/nodejs.tar.xz" ]]; then
+    wget -O $temp_path/nodejs.tar.xz https://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.xz -q --show-progress
+fi
+sudo tar -xJvf $temp_path/nodejs.tar.xz -C $bin_path
+sudo mv "$bin_path/node-$VERSION-$DISTRO/" $bin_path/nodejs/
+link $nodejs_home/bin/node /usr/bin/node
+link $nodejs_home/bin/npm /usr/bin/npm
+link $nodejs_home/bin/npx /usr/bin/npx
