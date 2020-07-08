@@ -3,22 +3,19 @@ cd $web_path
 
 
 case $action in
-    --react-app | --react-project)
-        for name in $@
+    --app-react-app | --app-react-project)
+        cmd="create-${action[@]:6}"
+        for name in $params
         do
             [[ $(is_dir "$web_path/$name") && $(confirm "¿Deseas eliminar $name?" Y) ]] && delete "$web_path/$name"
-            if [[ ! $(is_dir "$web_path/$name") ]]; then
-                npx create"${action[@]:1}" $name
-            fi
+            npx $cmd $web_path/$name
         done
     ;;
-    --laravel-app)
-        for name in $@
+    --app-laravel)
+        for name in $params
         do
             [[ $(is_dir "$web_path/$name") && $(confirm "¿Deseas eliminar $name?" Y) ]] && delete "$web_path/$name"
-            if [[ ! $(is_dir "$web_path/$name") ]]; then
-                composer create-project --prefer-dist laravel/laravel $name
-            fi
+            composer create-project --prefer-dist laravel/laravel $web_path/$name
         done
     ;;
 esac

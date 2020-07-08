@@ -1,14 +1,34 @@
 #!/bin/bash
 
 
-case $action in
-    #add_client
-    add_client)
-        ssh_path=$HOME"/.ssh"
-        authorized_keys=$ssh_path"/authorized_keys"
-        touch $authorized_keys
-        read -p "SSH Key: " ssh_client
-        echo $ssh_client >> $authorized_keys
-    ;;
-    #add_client
-esac
+
+ssh_user=$client
+if [[ $is_root && ! $(confirm "¿Desea continuar como root?" N) ]]; then
+    ssh_user=$(prompt "Usuario: ")
+fi
+str_ssh_path=$(eval echo ~$ssh_user)
+ssh_path="$str_ssh_path/.ssh"
+
+if [[ $str_ssh_path == '~'$ssh_user ]]; then
+    echo "El usuario no tiene una carpeta personal"
+else
+    case $action in
+        --ssh-add)
+                authorized_keys=$ssh_path"/authorized_keys"
+                touch $authorized_keys
+                echo $(prompt "ssh-rsa: ") >> $authorized_keys
+        ;;
+        --ssh-id)
+            if [[ -f "$ssh_path/id_rsa.pub" ]]; then
+                echo $(cat $ssh_path/id_rsa.pub)
+            else
+                echo "No se encuentra $ssh_path/id_rsa.pub"
+                if [[ $(confirm "¿Deseas crear una ID?" Y) ]]; then
+                    sudo su -- $ssh_user ssh-keygen
+                    echo $(cat $ssh_path/id_rsa.pub)
+                fi
+            fi
+        ;;
+    esac
+fi
+
