@@ -37,6 +37,11 @@ case $action in
             quiet sudo a2enmod rewrite
             quiet systemctl restart apache2
         fi
+        if [[ ! $(which arc) ]]; then
+            bash_arc="/etc/bash_completion.d/arcaela"
+            [[ ! -f $bash_arc ]] && $(sudo touch $bash_arc && sudo chmod -R 777 $bash_arc)
+            sudo echo "alias arc='$base_path/arc'" >> $bash_arc
+        fi
         if [[ ! $(which composer) ]]; then
             source $script_path/composer
         fi
