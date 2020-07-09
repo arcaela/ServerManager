@@ -7,15 +7,19 @@ case $action in
         cmd="create-${action[@]:6}"
         for name in $params
         do
-            [[ $(is_dir "$web_path/$name") && $(confirm "¿Deseas eliminar $name?" Y) ]] && delete "$web_path/$name"
-            npx $cmd $(path_go $web_path/$name)
+            if [[ ! $(is_dir "$web_path/$name") || $(confirm "¿Deseas eliminar $name?" Y) ]]; then
+                delete "$web_path/$name"
+                npx $cmd $(path_go $web_path/$name)
+            fi
         done
     ;;
     --app-laravel)
         for name in $params
         do
-            [[ $(is_dir "$web_path/$name") && $(confirm "¿Deseas eliminar $name?" Y) ]] && delete "$web_path/$name"
-            composer create-project --prefer-dist laravel/laravel $(path_go $web_path/$name)
+            if [[ ! $(is_dir "$web_path/$name") || $(confirm "¿Deseas eliminar $name?" Y) ]]; then
+                delete "$web_path/$name"
+                composer create-project --prefer-dist laravel/laravel $(path_go $web_path/$name)
+            fi
         done
     ;;
 esac
