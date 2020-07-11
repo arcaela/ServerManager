@@ -23,6 +23,9 @@ $_PARAMS = collect($_SERVER['argv'])->slice(1)
         ):true)
     ];
 })
+->macro('has',function($index){
+    return array_key_exists($index, $this->items);
+})
 ->native('__invoke',function(...$a){
     $len = count($a);
     if($len==0) return $this;
@@ -37,7 +40,7 @@ $_PARAMS = collect($_SERVER['argv'])->slice(1)
     }
 });
 // Set $CONFIGS from iOS file
-$_CONFIGS = store(__DIR__.'/ios')
+$_CONFIGS = store(__DIR__.'/config')
 ->files
 ->mapWithKeys(function($path){
     $key=preg_replace("/.*\/(\w+)\.(\w+)$/","$1",$path);

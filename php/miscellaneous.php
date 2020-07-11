@@ -6,6 +6,17 @@
     function input($key,$opt=''){ return param($key)??config($key)??$opt; }
     function clean($char='',$str=''){ return join($char, array_filter(explode($char, $str))); }
     function collect($items){ return new Collection($items); }
+    function listen($event,$fn){ return param()->has($event)?$fn():null; }
+
+    /* Paths */
+    function base_path($path=''){ return preg_replace("/\/+/","/",__DIR__."/../$path"); }
+    function bin_path($path=''){ return base_path("bin/$path"); }
+    function php_path($path=''){ return base_path("php/$path"); }
+    function resources_path($path=''){ return base_path("resources/$path"); }
+    function temp_path($path=''){ return base_path("temp/$path"); }
+    function web_path($path=''){ return base_path("web/$path"); }
+
+
     function bind($target,$fn,...$arg){
         return  is_string($fn)?$fn(...$arg):($fn->bindTo($target,$target))(...$arg);
     }
@@ -83,13 +94,16 @@
                 return $this->exist?"2":$this;
             } catch (\Throwable $th) { return $th; }
         })
+        ->macro('has',function($name){
+            return boolval(realpath($this->and($name)));
+        })
         ->macro('and',function($path=''){
             return preg_replace("/\/+/","/",$this->path."/$path");
         })
-        ->macro('open',function($path=''){
+        ->macro('clone',function($path=''){
             return store(preg_replace("/\/+/","/",$this->path."/$path"));
         })
-        ->macro('go',function($path=''){
+        ->macro('open',function($path=''){
             $path = preg_replace("/\/+/","/",$this->path."/$path");
             return $this->__items(array_merge(
                 ["path"=>$path,],
@@ -116,9 +130,9 @@
                     if((!is_link($path) && !is_file($path)) && is_dir($path)){
                         foreach(array_diff(scandir($path), ['.','..']) as $dir){
                             $root = "$path/$dir";
-                            if(is_link($root) || is_file($root)) $append["files"][]=$root;
+                            if(is_link($root) || is_file($root)) $append["files"][]=store($root);
                             else if(is_dir($root)){
-                                array_unshift($append["folders"], "$root");
+                                array_unshift($append["folders"], store($root));
                                 $append = getFilesPath("$root",$level,$append);
                             };
                         }
