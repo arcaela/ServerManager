@@ -8,7 +8,7 @@ case $action in
         for name in $params
         do
             if [[ ! $(is_dir "$web_path/$name") || $(confirm "¿Deseas eliminar $name?" Y) ]]; then
-                delete "$web_path/$name"
+                $(delete "$web_path/$name")
                 npx $cmd $(path_go $web_path/$name)
             fi
         done
@@ -17,7 +17,7 @@ case $action in
         for name in $params
         do
             if [[ ! $(is_dir "$web_path/$name") || $(confirm "¿Deseas eliminar $name?" Y) ]]; then
-                delete "$web_path/$name"
+                $(delete "$web_path/$name")
                 composer create-project --prefer-dist laravel/laravel $(path_go $web_path/$name)
             fi
         done
