@@ -1,13 +1,19 @@
 #!/bin/bash
-nodejs_home="$bin_path/nodejs"
+# Instalación de NodeJS
+node_path="$package_path/nodejs"
+nodeVersion="v14.5.0"
+nodeDistro="linux-x64"
 
-VERSION="v14.5.0"
-DISTRO="linux-x64"
+delete $node_path
+delete $bin_path/node
+delete $bin_path/npm
+delete $bin_path/npx
 if [[ ! -f "$temp_path/nodejs.tar.xz" ]]; then
-    wget -O $temp_path/nodejs.tar.xz https://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.xz -q --show-progress
+    wget -O $temp_path/nodejs.tar.xz https://nodejs.org/dist/$nodeVersion/node-$nodeVersion-$nodeDistro.tar.xz -q --show-progress
 fi
-sudo tar -xJvf $temp_path/nodejs.tar.xz -C $bin_path
-sudo mv "$bin_path/node-$VERSION-$DISTRO/" $bin_path/nodejs/
-link $nodejs_home/bin/node /usr/bin/node
-link $nodejs_home/bin/npm /usr/bin/npm
-link $nodejs_home/bin/npx /usr/bin/npx
+sudo tar -xJf $temp_path/nodejs.tar.xz -C $package_path
+sudo mv "$package_path/node-$nodeVersion-$nodeDistro/" "$node_path/"
+link $node_path/bin/node $bin_path/node
+link $node_path/bin/npm $bin_path/npm
+link $node_path/bin/npx $bin_path/npx
+# Fin de NodeJS

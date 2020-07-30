@@ -42,11 +42,17 @@ case $action in
             [[ ! -f $bash_arc ]] && $(sudo touch $bash_arc && sudo chmod -R 777 $bash_arc)
             sudo echo "alias arc='$base_path/arc'" >> $bash_arc
         fi
-        if [[ ! $(which composer) ]]; then
-            source $script_path/composer
-        fi
-        if [[ ! $(which node) ]]; then
-            source $script_path/nodejs
-        fi
+        for pkg in $(scandir $script_path); do
+            script $pkg
+        done
+        for bin_cmd in $(scandir $bin_path); do
+            delete "/usr/bin/$bin_cmd"
+            link $(realpath $bin_path/$bin_cmd) "/usr/bin/$bin_cmd"
+            echo $(whereis $bin_cmd)
+        done
+    ;;
+    --server-uninstall)
+        delete /etc/bash_completion.d/arcaela
+        delete /etc/bash_completion.d/arcaela*
     ;;
 esac

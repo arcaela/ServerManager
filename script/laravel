@@ -1,0 +1,11 @@
+#!/bin/bash
+# Instalación de Composer
+if [[ ! $(which composer) ]]; then
+    echo "Se requiere Composer para instalar Laravel"
+elif [[ $(exist $composer_home/vendor/bin/laravel) ]]; then
+    echo "Laravel ya está instalado"
+elif [[ $(confirm "¿Instalar Laravel?" N) ]]; then
+    echo "## Laravel"
+    composer global require laravel/installer
+fi
+# Fin de Composer

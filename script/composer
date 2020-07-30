@@ -1,35 +1,32 @@
 #!/bin/bash
-composer_bin="/usr/bin/composer"
-composer_home="$bin_path/composer"
-bash_path="/etc/bash_completion.d/arcaela_composer"
-
-[[ -f $bash_path ]] && source $bash_path || $(sudo touch $bash_path && sudo chmod -R 777 $bash_path)
-[[ ! -d "$composer_home" ]] && mkdir -m 777 -p $composer_home
-[[ -z $(cat $bash_path | grep 'export PATH=\$PATH\:'$composer_home) ]] && sudo echo 'export PATH=$PATH:'"$composer_home/vendor/bin" >> $bash_path
-[[ -z $CGR_BIN_DIR ]]   && CGR_BIN_DIR="$composer_home/vendor/bin"  && sudo echo "export CGR_BIN_DIR=$CGR_BIN_DIR" >> $bash_path
-[[ -z $CGR_BASE_DIR ]]  && CGR_BASE_DIR="$composer_home/global"     && sudo echo "export CGR_BASE_DIR=$CGR_BASE_DIR" >> $bash_path
-[[ -z $COMPOSER_HOME ]] && COMPOSER_HOME="$composer_home"           && sudo echo "export COMPOSER_HOME=$COMPOSER_HOME" >> $bash_path
-
-
-if [[ ! $(which composer) && -f "$composer_home/composer.phar" ]]; then
-    sudo rm -rf $composer_bin
-    link "$composer_home/composer.phar" $composer_bin
-    sudo chmod -R 777 $composer_home
-elif [[ ! $(which composer) && $(which php) && $(confirm "¿Instalar composer?" Y) ]]; then
-    echo "Descargando..."
-    wget -O $temp_path/composer.php https://getcomposer.org/installer -q --show-progress
-    echo "Instalando..."
-    quiet php $temp_path/composer.php --install-dir=$composer_home/ --filename=composer.phar
-    if [[ -f "$composer_home/composer.phar" ]]; then
-        sudo rm -rf $composer_bin
-        link "$composer_home/composer.phar" $composer_bin
-        echo "$composer_bin -> $composer_home/composer.phar"
+# Instalación de Composer
+composer_path="$package_path/composer"
+composer_executor="$package_path/composer/composer.phar"
+composer_bash="/etc/bash_completion.d/arcaela_composer"
+if [[ $action == 'remove-composer' ]]; then
+    delete $composer_bash
+    delete "$bin_path/composer"
+else
+    [[ -f $composer_bash ]] && source $composer_bash || $(sudo touch $composer_bash && sudo chmod -R 777 $composer_bash)
+    [[ ! -d "$composer_path" ]] && mkdir -m 777 -p $composer_path
+    [[ -z $(cat $composer_bash | grep 'export PATH=\$PATH\:'$composer_path) ]] && sudo echo 'export PATH=$PATH:'"$composer_path/vendor/bin" >> $composer_bash
+    [[ -z $COMPOSER_HOME ]] && COMPOSER_HOME="$composer_path"           && sudo echo "export COMPOSER_HOME=$COMPOSER_HOME" >> $composer_bash
+    [[ -z $CGR_BASE_DIR ]]  && CGR_BASE_DIR="$composer_path/global"     && sudo echo "export CGR_BASE_DIR=$CGR_BASE_DIR" >> $composer_bash
+    [[ -z $CGR_BIN_DIR ]]   && CGR_BIN_DIR="$composer_path/vendor/bin"  && sudo echo "export CGR_BIN_DIR=$CGR_BIN_DIR" >> $composer_bash
+    if [[ -f "$composer_executor" ]]; then
+        sudo rm -rf "$bin_path/composer"
+        link $composer_executor $bin_path/composer
     else
-        echo "Error: No logramos instalar composer"
+        [[ ! -f $temp_path/composer.php ]] && wget -O $temp_path/composer.php https://getcomposer.org/installer -q --show-progress
+        echo "Instalando..."
+        quiet php $temp_path/composer.php --install-dir=$composer_path/ --filename=composer.phar
+        if [[ -f "$composer_executor" ]]; then
+            sudo rm -rf "$bin_path/composer"
+            link $composer_executor $bin_path/composer
+        else
+            echo "Error: No logramos instalar composer"
+        fi
     fi
-    sudo chmod -R 777 $composer_home
+    sudo chmod -R 777 $composer_path
 fi
-if [[ $(which composer) && ! $(exist $composer_home/vendor/bin/laravel) && $(confirm "¿Instalar Laravel?" N) ]]; then
-    echo "## Laravel"
-    composer global require laravel/installer
-fi
+# Fin de Composer
