@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+[[ $(which composer) ]] && echo "composer: Installed" || echo "composer: ---"
+[[ -d "/etc/apache2/" ]] && echo "apache2: Installed" || echo "apache2: ---"
+[[ $(which node) ]] && echo "node: "$(node -v) || echo "node: ---"
+[[ $(which npm) ]] && echo "npm: "$(npm -v) || echo "npm: ---"
+[[ $(which npx) ]] && echo "npx: "$(npx -v) || echo "npx: ---"
+[[ $(which php) ]] && echo "php: "$(php -v) || echo "php: ---"
+[[ $(which git) ]] && echo "git: "$(git -v) || echo "git: ---"

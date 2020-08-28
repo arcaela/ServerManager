@@ -1,0 +1,17 @@
+#!/bin/bash
+isnpx=$(which npx)
+apps="$params"
+
+if [[ $isnpx || $(confirm "NodeJS es requerido, ¿Instalar ahora?" Y) ]]; then
+    [[ -z $isnpx ]] && params="nodejs" && source $script_path/install
+    [[ $command == '--app-express' ]] && cmdline="express"
+    [[ $command == '--app-react' ]] && cmdline="npx create-react-app"
+    [[ $command == '--app-laravel' ]] && cmdline="composer create-project --prefer-dist laravel/laravel"
+    for name in $apps
+    do
+        if [[ ! $(is_dir "$web_path/$name") || $(confirm "¿Deseas eliminar $name?" Y) ]]; then
+            $(delete "$web_path/$name")
+            $cmdline $(path_go $web_path/$name)
+        fi
+    done
+fi

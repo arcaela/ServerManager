@@ -1,0 +1,19 @@
+#!/bin/bash
+
+
+ssh_user=$client
+if [[ $is_root && ! $(confirm "¿Desea continuar como root?" N) ]]; then
+    ssh_user=$(prompt "Usuario: ")
+fi
+str_ssh_path=$(eval echo ~$ssh_user)
+ssh_path="$str_ssh_path/.ssh"
+[[ $str_ssh_path == '~'$ssh_user ]] && echo "El usuario no tiene una carpeta personal" && exit
+
+case $command in
+    --ssh-add)
+        authorized_keys=$ssh_path"/authorized_keys"
+        touch $authorized_keys
+        echo $(prompt "ssh-rsa: ") >> $authorized_keys
+    ;;
+esac
+

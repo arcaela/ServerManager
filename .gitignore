@@ -1,6 +1,5 @@
-bin/
-package/
-resources/
+helper/
+services/
 temp/
 web/
 .Trash-1000/
