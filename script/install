@@ -102,14 +102,18 @@ function install_electrum {
     [[ $(which electrum) ]] && return
     echo "Instalando Electrum"
     electrum_path="$services_path/electrum"
-    if [[ ! -f "$temp_path/electrum.zip" ]]; then
+    electrum_version="Electrum-4.0.2"
+
+    if [[ ! -f "$temp_path/$electrum_version.tar.gz" ]]; then
         echo "Descargando Electrum..."
-        wget -O $temp_path/electrum.zip https://github.com/spesmilo/electrum/archive/master.zip -q --show-progress
+        wget -P $temp_path/ "https://download.electrum.org/4.0.2/$electrum_version.tar.gz" -q --show-progress
     fi
     echo "Registrando paquetes..."
     delete "$services_path/electrum/"
-    unzip -qq $temp_path/electrum.zip -d $temp_path/
-    mv -f "$temp_path/electrum-master/" "$services_path/electrum/"
+    sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography -y
+    sudo apt-get upgrade -y
+    tar -xf "$temp_path/$electrum_version.tar.gz" -C "$services_path/"
+    mv -f "$services_path/$electrum_version/" "$services_path/electrum/"
     $(add_bin electrum "$base_path/arc")
 }
 
