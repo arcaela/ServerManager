@@ -1,22 +1,18 @@
 #!/bin/bash
-base_path="$(dirname $(realpath ${BASH_SOURCE[0]}))"
-source $base_path/.env
-if [[ ! $(which arc) ]]; then
-    $(add_bin arc $base_path/arc)
-fi
-if [[ -z $command ]]; then
-    echo "Ningún argumento enviado"
-    exit
-fi
+. $(dirname $(realpath $0))/.env
+[[ ! $(which arc) ]] && $(add_bin arc $base_path/arc)
+
+
+
 
 #########################################################
-if [[ -f "$script_path/${command:2}" ]]; then
+if [[ -f "$script_path/$pcmd" ]]; then
+    source $script_path/$pcmd
+elif [[ -f "$script_path/${command:2}" ]]; then
     source $script_path/${command:2}
-    exit
-fi
-namespace="${command:2:`expr index "${command:2}" -`-1}"
-if [[ -f "$script_path/$namespace" ]]; then
+elif [[ -f "$script_path/$namespace" ]]; then
     source "$script_path/$namespace"
-    exit
+else
+    echo "$command no existe como comando interno o externo."
 fi
 #########################################################
