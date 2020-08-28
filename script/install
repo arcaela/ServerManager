@@ -97,6 +97,27 @@ function install_git {
     echo "Git Instalado: $(which git)"
 }
 
+
+function install_electrum {
+    [[ $(which electrum) ]] && return
+    echo "Instalando Electrum"
+    electrum_path="$services_path/electrum"
+    if [[ ! -f "$temp_path/electrum.zip" ]]; then
+        echo "Descargando Electrum..."
+        wget -O $temp_path/electrum.zip https://github.com/spesmilo/electrum/archive/master.zip -q --show-progress
+    fi
+    echo "Registrando paquetes..."
+    delete "$services_path/electrum/"
+    unzip -qq $temp_path/electrum.zip -d $temp_path/
+    mv -f "$temp_path/electrum-master/" "$services_path/electrum/"
+    $(add_bin electrum "$base_path/arc")
+}
+
+
+
+
+
+
 for require in ${params[@]}; do
     if typeset -f "install_$require" > /dev/null; then
         "install_$require"
