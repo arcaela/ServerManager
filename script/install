@@ -99,6 +99,11 @@ function install_git {
 
 
 function install_electrum {
+
+
+
+
+    return
     [[ $(which electrum) ]] && return
     echo "Instalando Electrum"
     electrum_path="$services_path/electrum"
