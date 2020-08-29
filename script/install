@@ -1,29 +1,31 @@
 #!/bin/bash
-count=0
-
-function install_nodejs {
+installed_apps=0
+function install_node {
     [[ $(which node) ]] && return
     version='v14.5.0'
     distro='linux-x64'
     node_path="$services_path/nodejs/$version"
+    node_bash="/etc/bash_completion.d/arcaela_nodejs"
+
     delete $node_path
-    delete /usr/bin/npx
-    delete /usr/bin/npm
-    delete /usr/bin/node
     echo "Instalando NodeJS $version"
     if [[ ! -f "$temp_path/node-$version-$distro.tar.xz" ]]; then
         wget -P $temp_path/ https://nodejs.org/dist/$version/node-$version-$distro.tar.xz -q --show-progress
     fi
+
     mkdir -m 777 -p $(dirname $node_path)
-    sudo tar -xJf "$temp_path/node-$version-$distro.tar.xz" -C $services_path
-    sudo mv "$services_path/node-$version-$distro/" $node_path/
+    sudo tar -xJf "$temp_path/node-$version-$distro.tar.xz" -C $temp_path/
+    sudo mv "$temp_path/node-$version-$distro/" $node_path/
+
     echo "Registrando node"
-    $(add_bin node $node_path/bin/node)
-    echo "Registrando npm"
-    $(add_bin npm $node_path/bin/npm)
-    echo "Registrando npx"
-    $(add_bin npx $node_path/bin/npx)
-    count=$((count+1))
+    [[ ! -f $node_bash ]] && sudo touch $node_bash;sudo chmod -R 777 $node_bash
+    echo "export PATH=$PATH:$node_path/bin" >> $node_bash
+    source $node_bash
+    npm install express-generator -g
+    installed_apps=$((installed_apps+3))
+}
+function install_nodejs {
+    install_node
 }
 
 function install_composer {
@@ -40,11 +42,11 @@ if [[ $(which php) || $(in_array php ${params[@]}) || $(confirm "Composer requie
         COMPOSER_HOME="$composer_path"           
         CGR_BASE_DIR="$composer_path/global"     
         CGR_BIN_DIR="$composer_path/vendor/bin"
-    echo "export CGR_BIN_DIR=$CGR_BIN_DIR
-export CGR_BASE_DIR=$CGR_BASE_DIR
-export COMPOSER_HOME=$COMPOSER_HOME
-export PATH=$PATH:$composer_path/vendor/bin" >> $composer_bash
-    sudo chmod -R 777 $composer_bash
+        echo "export CGR_BIN_DIR=$CGR_BIN_DIR" >> $composer_bash
+        echo "export CGR_BASE_DIR=$CGR_BASE_DIR" >> $composer_bash
+        echo "export COMPOSER_HOME=$COMPOSER_HOME" >> $composer_bash
+        echo "export PATH=$PATH:$composer_path/vendor/bin" >> $composer_bash
+        sudo chmod -R 777 $composer_bash
     fi
     if [[ ! -f "$composer_phar" ]]; then
         mkdir -m 777 -p $composer_path
@@ -55,7 +57,7 @@ export PATH=$PATH:$composer_path/vendor/bin" >> $composer_bash
     if [[ -f "$composer_phar" ]]; then
         sudo rm /usr/bin/composer
         $(add_bin composer $composer_phar)
-       count=$((count+1))
+       installed_apps=$((installed_apps+1))
     else
         echo "Error: No logramos instalar composer"
     fi
@@ -66,6 +68,7 @@ function install_laravel {
     if [[ $(which composer) || $(in_array composer ${params[@]}) || $(confirm "Laravel requiere de Composer, ¿Continuar? Y") ]]; then
         [[ ! $(which composer) ]] && install_composer
         composer global require laravel/installer
+        installed_apps=$((installed_apps+1))
     else
         echo "No podemos instalar Laravel sin composer"
     fi
@@ -77,7 +80,7 @@ function install_php {
         sudo apt-get install software-properties-common php7.4 php-pear php7.4-curl php7.4-dev php7.4-gd php7.4-mbstring php7.4-zip php7.4-mysql php7.4-xml -qq
         sudo apt-get upgrade -qq
     fi
-    [[ $(which php) ]] && echo "PHP se ha instalado "$(php -v) || echo "No pudimos instalar PHP"
+    [[ $(which php) ]] && installed_apps=$((installed_apps+1)) || echo "No pudimos instalar PHP"
 }
 
 function install_apache2 {
@@ -87,6 +90,7 @@ function install_apache2 {
     sudo mkdir -p /etc/apache2/logs/
     sudo a2enmod rewrite
     systemctl restart apache2
+    installed_apps=$((installed_apps+1))
 }
 
 function install_git {
@@ -95,6 +99,7 @@ function install_git {
     sudo apt-get install software-properties-common git -qq
     sudo apt-get upgrade -qq
     echo "Git Instalado: $(which git)"
+    installed_apps=$((installed_apps+1))
 }
 
 
@@ -112,6 +117,7 @@ function install_electrum {
     tar -xvf $temp_path/Electrum-4.0.2.tar.gz -C $temp_path/
     mv $temp_path/Electrum-4.0.2/ $electrum_sources/
     $(add_bin electrum $base_path/arc)
+    installed_apps=$((installed_apps+1))
 }
 
 
@@ -120,4 +126,4 @@ for require in ${params[@]}; do
         "install_$require"
     fi
 done
-# echo "Se han instalado ($count) servicios."
+echo "Se han instalado ($installed_apps) servicios."
