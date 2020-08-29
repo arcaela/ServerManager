@@ -99,32 +99,20 @@ function install_git {
 
 
 function install_electrum {
-
-
-
-
-    return
     [[ $(which electrum) ]] && return
-    echo "Instalando Electrum"
-    electrum_path="$services_path/electrum"
-    electrum_version="Electrum-4.0.2"
-
-    if [[ ! -f "$temp_path/$electrum_version.tar.gz" ]]; then
-        echo "Descargando Electrum..."
-        wget -P $temp_path/ "https://download.electrum.org/4.0.2/$electrum_version.tar.gz" -q --show-progress
-    fi
     echo "Registrando paquetes..."
-    delete "$services_path/electrum/"
-    sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography -y
-    sudo apt-get upgrade -y
-    tar -xf "$temp_path/$electrum_version.tar.gz" -C "$services_path/"
-    mv -f "$services_path/$electrum_version/" "$services_path/electrum/"
-    $(add_bin electrum "$base_path/arc")
+    sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography -qq
+    echo "Instalando Electrum"
+    version="4.0.2"
+    electrum_path="$services_path/electrum"
+    electrum_sources="$electrum_path/sources"
+    electrum_data="$electrum_path/electrum_data"
+    [[ ! -f "$temp_path/Electrum-$version.tar.gz" ]] && wget -P $temp_path https://download.electrum.org/4.0.2/Electrum-4.0.2.tar.gz
+    [[ ! -d $electrum_path/ ]] && mkdir -m 777 -p $electrum_path
+    tar -xvf $temp_path/Electrum-4.0.2.tar.gz -C $temp_path/
+    mv $temp_path/Electrum-4.0.2/ $electrum_sources/
+    $(add_bin electrum $base_path/arc)
 }
-
-
-
-
 
 
 for require in ${params[@]}; do
