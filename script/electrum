@@ -1,16 +1,15 @@
 #!/bin/bash
-electrum_path="$services_path/electrum"
-sources="$services_path/electrum/sources"
-electrum_data="$services_path/electrum/electrum_data"
+root="$services_path/electrum"
+sources="$root/sources"
+data="$root/data"
 send="$sources/run_electrum"
-
 
 case "$command" in
     --daemon)
-        $send daemon -d -D $electrum_data
-        $send load_wallet -D $electrum_data
+        $send daemon -d -D $data
+        $send load_wallet -D $data
     ;;
     *)
-        $send $@ --dir=$electrum_data
+        $send $@ --dir=$data
     ;;
 esac
