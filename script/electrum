@@ -6,7 +6,7 @@ action="$command"
 [[ ! -z $alter_cmd ]] && action="$alter_cmd"
 
 function run_electrum {
-    $($sources/run_electrum $@ -D "$data")
+    $sources/run_electrum $@ -D "$data"
 }
 
 case "$action" in
@@ -26,9 +26,11 @@ case "$action" in
     --set)
         run_electrum -o setconfig ${params[0]} ${params[1]}
     ;;
-    --daemon)
-        _id=$(run_electrum daemon -d > /dev/null)
-        # echo "ID: $$"
+    --start)
+        run_electrum daemon -d
+    ;;
+    --stop)
+        run_electrum stop
     ;;
     *)
         run_electrum
