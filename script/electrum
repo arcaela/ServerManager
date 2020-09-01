@@ -16,7 +16,7 @@ case "$action" in
         echo "Registrando paquetes..."
         sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography python3-setuptools python3-pip -y
         echo "Instalando Electrum"
-        git clone --depth 1 https://github.com/arcaela/electrum/archive/master.zip $sources/
+        git clone --depth 1 https://github.com/arcaela/electrum.git $sources/
         $(add_bin electrum $base_path/arc)
         installed_apps=$((installed_apps+1))
     ;;
