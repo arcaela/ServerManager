@@ -12,15 +12,16 @@ function install_node {
     if [[ -f "$temp_path/nodejs.tar.xz" ]]; then
         delete $node_path
         delete $node_bash
+        . /etc/profile
         echo "Instalando NodeJS $version"
         sudo tar -xJf "$temp_path/nodejs.tar.xz" -C $services_path/
         sudo mv "$services_path/node-$version-$distro/" $node_path/
         echo "Registrando recursos..."
         echo $(parse_export $node_path/bin) >> $node_bash
-        . /etc/profile
         $(link $node_path/bin/npm /usr/bin/npx)
         $(link $node_path/bin/npm /usr/bin/npm)
         $(link $node_path/bin/node /usr/bin/node)
+        . /etc/profile
         installed_apps=$((installed_apps+3))
     else
         echo "Error: No pudimos descargar NodeJS"
