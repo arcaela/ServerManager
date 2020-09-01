@@ -3,17 +3,18 @@
 __dd="$base_path/.basharc"
 [[ ! -f "$bin_path/arc" ]] && $(add_bin arc "$base_path/arc")
 if [[ ! -f "$__dd" || $command == '--server-refresh' ]]; then
-    $(delete $_dd)
-    echo '#!/bin/bash' >> $__dd
-    echo $(parse_export $base_path/bin) >> $__dd
-    echo "if [[ -d $bash_path ]]; then" >> $__dd
-    echo "    for file in $bash_path/*; do" >> $__dd
-    echo '        [[ -f $file ]] && source $file' >> $__dd
-    echo '    done' >> $__dd
-    echo 'fi' >> $__dd
-    sudo chmod -R 777 $__dd
     $(delete /etc/bash_completion.d/arcaela)
+    $(delete $_dd)
+echo "#!/bin/bash
+$(parse_export $base_path/bin)
+if [[ -d $bash_path ]]; then
+    for file in $bash_path/*; do
+        "'[[ -f $file ]] && . $file'"
+    done
+fi
+" >> $__dd
     $(link $__dd /etc/bash_completion.d/arcaela)
+    sudo chmod -R 777 $__dd
     . $__dd
 fi
 
