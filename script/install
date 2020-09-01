@@ -1,24 +1,26 @@
 #!/bin/bash
 installed_apps=0
 function install_node {
-    [[ $(which node) ]] && return
-    version='v14.5.0'
     distro='linux-x64'
+    version='v14.5.0'
     node_path="$services_path/nodejs"
     node_bash="$bash_path/node.bash"
-    if [[ ! -f "$temp_path/node-$version-$distro.tar.xz" ]]; then
+    if [[ ! -f "$temp_path/nodejs.tar.xz" ]]; then
         echo "Descargando NodeJS $version"
-        wget -P $temp_path/ https://nodejs.org/dist/$version/node-$version-$distro.tar.xz -q --show-progress
+        wget -O $temp_path/nodejs.tar.xz https://nodejs.org/dist/$version/node-$version-$distro.tar.xz -q --show-progress
     fi
-    if [[ -f "$temp_path/node-$version-$distro.tar.xz" ]]; then
-        echo "Instalando NodeJS $version"
+    if [[ -f "$temp_path/nodejs.tar.xz" ]]; then
         delete $node_path
-        sudo tar -xJf "$temp_path/node-$version-$distro.tar.xz" -C $services_path/
+        delete $node_bash
+        echo "Instalando NodeJS $version"
+        sudo tar -xJf "$temp_path/nodejs.tar.xz" -C $services_path/
         sudo mv "$services_path/node-$version-$distro/" $node_path/
         echo "Registrando recursos..."
-        $(delete $node_bash)
         echo $(parse_export $node_path/bin) >> $node_bash
-        source $node_bash
+        . /etc/profile
+        $(link $node_path/bin/npm /usr/bin/npx)
+        $(link $node_path/bin/npm /usr/bin/npm)
+        $(link $node_path/bin/node /usr/bin/node)
         installed_apps=$((installed_apps+3))
     else
         echo "Error: No pudimos descargar NodeJS"
