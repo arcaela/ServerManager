@@ -16,21 +16,20 @@ case "$action" in
         [[ $(which electrum) ]] && return
         $(rmkdir $root)
         echo "Registrando paquetes..."
-        sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography -y
-        version="4.0.2"
-        if [[ ! -f "$temp_path/Electrum-$version.tar.gz" ]]; then
-            echo "Descargando Electrum..."
-            wget -P $temp_path/ https://download.electrum.org/$version/Electrum-$version.tar.gz
-        fi
-        if [ -f "$temp_path/Electrum-$version.tar.gz" ]; then
-            echo "Instalando Electrum"
-            tar -xvf $temp_path/Electrum-$version.tar.gz -C $services_path/
-            mv $services_path/Electrum-$version/ $sources/
-            $(add_bin electrum $base_path/arc)
-            installed_apps=$((installed_apps+1))
-        else
-            echo "No hemos podido descargar Electrum"
-        fi
+        sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography python-requests gettext -y
+        _tt=$(pwd)
+        cd $root/
+        echo "Descargando Electrum..."
+        git clone git://github.com/spesmilo/electrum.git .
+        git submodule update --init
+        python3 -m pip install --user -e .
+        ./contrib/pull_locale
+        cd $_tt/
+        $(add_bin electrum $base_path/arc)
+        installed_apps=$((installed_apps+1))
+    ;;
+    --get)
+        run_electrum -o getconfig ${params[0]}
     ;;
     --set)
         run_electrum -o setconfig ${params[0]} ${params[1]}
