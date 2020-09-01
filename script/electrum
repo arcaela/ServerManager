@@ -1,10 +1,30 @@
 #!/bin/bash
 root="$services_path/electrum"
-sources="$root/sources"
+sources="$root/ubuntu"
 data="$root/data"
-send="$sources/run_electrum"
-
-case "$command" in
+action="$command"
+[[ ! -z $alter_cmd ]] && action="$alter_cmd"
+case "$action" in
+    --install)
+        [[ $(which electrum) ]] && return
+        $(rmkdir $root)
+        echo "Registrando paquetes..."
+        sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography -y
+        version="4.0.2"
+        if [[ ! -f "$temp_path/Electrum-$version.tar.gz" ]]; then
+            echo "Descargando Electrum..."
+            wget -P $temp_path/ https://download.electrum.org/$version/Electrum-$version.tar.gz
+        fi
+        if [ -f "$temp_path/Electrum-$version.tar.gz" ]; then
+            echo "Instalando Electrum"
+            tar -xvf $temp_path/Electrum-$version.tar.gz -C $services_path/
+            mv $services_path/Electrum-$version/ $sources/
+            $(add_bin electrum $base_path/arc)
+            installed_apps=$((installed_apps+1))
+        else
+            echo "No hemos podido descargar Electrum"
+        fi
+    ;;
     --daemon)
         $send daemon -d -D $data
         $send load_wallet -D $data

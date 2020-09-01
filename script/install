@@ -4,25 +4,25 @@ function install_node {
     [[ $(which node) ]] && return
     version='v14.5.0'
     distro='linux-x64'
-    node_path="$services_path/nodejs/$version"
-    node_bash="/etc/bash_completion.d/arcaela_nodejs"
-
-    delete $node_path
-    echo "Instalando NodeJS $version"
+    node_path="$services_path/nodejs"
+    node_bash="$bash_path/node.bash"
     if [[ ! -f "$temp_path/node-$version-$distro.tar.xz" ]]; then
+        echo "Descargando NodeJS $version"
         wget -P $temp_path/ https://nodejs.org/dist/$version/node-$version-$distro.tar.xz -q --show-progress
     fi
-
-    mkdir -m 777 -p $(dirname $node_path)
-    sudo tar -xJf "$temp_path/node-$version-$distro.tar.xz" -C $temp_path/
-    sudo mv "$temp_path/node-$version-$distro/" $node_path/
-
-    echo "Registrando node"
-    [[ ! -f $node_bash ]] && sudo touch $node_bash;sudo chmod -R 777 $node_bash
-    echo "export PATH=$PATH:$node_path/bin" >> $node_bash
-    source $node_bash
-    npm install express-generator -g
-    installed_apps=$((installed_apps+3))
+    if [[ -f "$temp_path/node-$version-$distro.tar.xz" ]]; then
+        echo "Instalando NodeJS $version"
+        delete $node_path
+        sudo tar -xJf "$temp_path/node-$version-$distro.tar.xz" -C $services_path/
+        sudo mv "$services_path/node-$version-$distro/" $node_path/
+        echo "Registrando recursos..."
+        $(delete $node_bash)
+        echo $(parse_export $node_path/bin) >> $node_bash
+        source $node_bash
+        installed_apps=$((installed_apps+3))
+    else
+        echo "Error: No pudimos descargar NodeJS"
+    fi
 }
 function install_nodejs {
     install_node
@@ -32,30 +32,23 @@ function install_composer {
 [[ $(which composer) ]] && return
 composer_path="$services_path/composer"
 composer_phar="$composer_path/composer.phar"
-composer_bash="/etc/bash_completion.d/arcaela_composer"
+composer_bash="$bash_path/composer.bash"
 if [[ $(which php) || $(in_array php ${params[@]}) || $(confirm "Composer requiere de PHP, ¿Continuar? Y") ]]; then
     [[ ! $(which php) ]] && install_php
-    echo "Instalando Composer"
-    if [[ -f $composer_bash ]]; then
-        source $composer_bash
-    else
-        COMPOSER_HOME="$composer_path"           
-        CGR_BASE_DIR="$composer_path/global"     
-        CGR_BIN_DIR="$composer_path/vendor/bin"
-        echo "export CGR_BIN_DIR=$CGR_BIN_DIR" >> $composer_bash
-        echo "export CGR_BASE_DIR=$CGR_BASE_DIR" >> $composer_bash
-        echo "export COMPOSER_HOME=$COMPOSER_HOME" >> $composer_bash
-        echo "export PATH=$PATH:$composer_path/vendor/bin" >> $composer_bash
-        sudo chmod -R 777 $composer_bash
+    $(rmkdir $composer_path)
+    $(delete $composer_bash)
+    [[ -z $COMPOSER_HOME ]] && COMPOSER_HOME="$composer_path" && echo "export COMPOSER_HOME='$COMPOSER_HOME'" >> $composer_bash
+    [[ -z $CGR_BASE_DIR ]] && CGR_BASE_DIR="$composer_path/global" && echo "export CGR_BASE_DIR='$CGR_BASE_DIR'" >> $composer_bash
+    [[ -z $CGR_BIN_DIR ]] && CGR_BIN_DIR="$composer_path/vendor/bin" && echo "export CGR_BIN_DIR='$CGR_BIN_DIR'" >> $composer_bash
+    echo $(parse_export $CGR_BIN_DIR) >> $composer_bash
+    source $composer_bash
+    if [[ ! -f $temp_path/composer.php ]]; then 
+        echo "Descargando Composer"
+        wget -O $temp_path/composer.php https://getcomposer.org/installer -q --show-progress
     fi
-    if [[ ! -f "$composer_phar" ]]; then
-        mkdir -m 777 -p $composer_path
-        [[ ! -f $temp_path/composer.php ]] && wget -O $temp_path/composer.php https://getcomposer.org/installer -q --show-progress
-        php $temp_path/composer.php --install-dir=$composer_path/ --filename=composer.phar
-        sudo chmod -R 777 $composer_path
-    fi
+    echo "Instalando Composer..."
+    php $temp_path/composer.php --install-dir=$composer_path/ --filename=composer.phar
     if [[ -f "$composer_phar" ]]; then
-        sudo rm /usr/bin/composer
         $(add_bin composer $composer_phar)
        installed_apps=$((installed_apps+1))
     else
@@ -77,16 +70,15 @@ function install_laravel {
 function install_php {
     if [[ ! $(which php) ]]; then
         [[ ! $(grep -q "^deb .*ondrej/php" /etc/apt/sources.list /etc/apt/sources.list.d/*) ]] && sudo add-apt-repository ppa:ondrej/php -y
-        sudo apt-get install software-properties-common php7.4 php-pear php7.4-curl php7.4-dev php7.4-gd php7.4-mbstring php7.4-zip php7.4-mysql php7.4-xml -qq
-        sudo apt-get upgrade -qq
+        sudo apt-get install software-properties-common php7.4 php-pear php7.4-curl php7.4-dev php7.4-gd php7.4-mbstring php7.4-zip php7.4-mysql php7.4-xml -y
+        sudo apt-get update -y
     fi
     [[ $(which php) ]] && installed_apps=$((installed_apps+1)) || echo "No pudimos instalar PHP"
 }
 
 function install_apache2 {
-    [[ $(which a2enmod) ]] && return
-    sudo apt-get install software-properties-common apache2 -qq
-    sudo apt-get upgrade -qq
+    [[ $(command -v apache2) ]] && return
+    sudo apt-get install software-properties-common apache2 -y
     sudo mkdir -p /etc/apache2/logs/
     sudo a2enmod rewrite
     systemctl restart apache2
@@ -96,8 +88,7 @@ function install_apache2 {
 function install_git {
     echo "Instalando git"
     [[ $(which git) ]] && return
-    sudo apt-get install software-properties-common git -qq
-    sudo apt-get upgrade -qq
+    sudo apt-get install software-properties-common git -y
     echo "Git Instalado: $(which git)"
     installed_apps=$((installed_apps+1))
 }
@@ -105,19 +96,8 @@ function install_git {
 
 function install_electrum {
     [[ $(which electrum) ]] && return
-    echo "Registrando paquetes..."
-    sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography -qq
-    echo "Instalando Electrum"
-    version="4.0.2"
-    root="$services_path/electrum"
-    sources="$root/ubuntu"
-    [[ -d "$sources" ]] && $(delete $sources)
-    [[ ! -d "$root" ]] && mkdir -m 777 -p "$root"
-    [[ ! -f "$temp_path/Electrum-$version.tar.gz" ]] && wget -P $temp_path https://download.electrum.org/$version/Electrum-$version.tar.gz
-    tar -xvf $temp_path/Electrum-$version.tar.gz -C $temp_path/
-    mv $temp_path/Electrum-$version/ $sources/
-    $(add_bin electrum $base_path/arc)
-    installed_apps=$((installed_apps+1))
+    alter_cmd='--install'
+    source $script_path/electrum
 }
 
 
