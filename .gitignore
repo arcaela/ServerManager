@@ -1,6 +1,6 @@
 .Trash-1000/
-bashrc.d/
-.basharc
+basharc
+basharc.d/
 bin/
 helper/
 services/

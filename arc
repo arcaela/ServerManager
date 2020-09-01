@@ -1,10 +1,9 @@
 #!/bin/bash
 . $(dirname $(realpath $0))/.env
-__dd="$base_path/.basharc"
 [[ ! -f "$bin_path/arc" ]] && $(add_bin arc "$base_path/arc")
-if [[ ! -f "$__dd" || $command == '--server-refresh' ]]; then
+if [[ ! -f "$bash_file" || $command == '--server-refresh' ]]; then
     $(delete /etc/bash_completion.d/arcaela)
-    $(delete $_dd)
+    $(delete $bash_file)
 echo "#!/bin/bash
 $(parse_export $base_path/bin)
 if [[ -d $bash_path ]]; then
@@ -12,10 +11,10 @@ if [[ -d $bash_path ]]; then
         "'[[ -f $file ]] && . $file'"
     done
 fi
-" >> $__dd
-    $(link $__dd /etc/bash_completion.d/arcaela)
-    sudo chmod -R 777 $__dd
-    . $__dd
+" >> $bash_file
+    $(link $bash_file /etc/bash_completion.d/arcaela)
+    sudo chmod -R 777 $bash_file
+    . $bash_file
 fi
 
 #########################################################
