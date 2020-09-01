@@ -15,5 +15,8 @@ case $command in
         touch $authorized_keys
         echo $(prompt "ssh-rsa: ") >> $authorized_keys
     ;;
+    --ssh-gen)
+        ssh-keygen
+    ;;
 esac
 
