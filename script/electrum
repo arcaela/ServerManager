@@ -9,24 +9,26 @@ function run_electrum {
     $sources/run_electrum $@ -D "$data"
 }
 
-
-
 case "$action" in
     --install)
         [[ $(which electrum) ]] && return
         $(rmkdir $root)
         echo "Registrando paquetes..."
-        sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography python-requests gettext -y
-        _tt=$(pwd)
-        cd $root/
-        echo "Descargando Electrum..."
-        git clone git://github.com/spesmilo/electrum.git .
-        git submodule update --init
-        python3 -m pip install --user -e .
-        ./contrib/pull_locale
-        cd $_tt/
-        $(add_bin electrum $base_path/arc)
-        installed_apps=$((installed_apps+1))
+        sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography python3-setuptools python3-pip -y
+        version="4.0.2"
+        if [[ ! -f "$temp_path/Electrum.zip" ]]; then
+            echo "Descargando Electrum..."
+            wget -O $temp_path/Electrum.zip https://github.com/arcaela/electrum/archive/master.zip
+        fi
+        if [ -f "$temp_path/Electrum.zip" ]; then
+            echo "Instalando Electrum"
+            unzip "$temp_path/Electrum.zip" -d $services_path/
+            mv $services_path/electrum-master/ $sources/
+            $(add_bin electrum $base_path/arc)
+            installed_apps=$((installed_apps+1))
+        else
+            echo "No hemos podido descargar Electrum"
+        fi
     ;;
     --get)
         run_electrum -o getconfig ${params[0]}
