@@ -4,6 +4,13 @@ sources="$root/ubuntu"
 data="$root/data"
 action="$command"
 [[ ! -z $alter_cmd ]] && action="$alter_cmd"
+
+function run_electrum {
+    $sources/run_electrum $@ -D "$data"
+}
+
+
+
 case "$action" in
     --install)
         [[ $(which electrum) ]] && return
@@ -25,11 +32,10 @@ case "$action" in
             echo "No hemos podido descargar Electrum"
         fi
     ;;
-    --daemon)
-        $send daemon -d -D $data
-        $send load_wallet -D $data
+    --set)
+        run_electrum -o setconfig ${params[0]} ${params[1]}
     ;;
     *)
-        $send $@ --dir=$data
+        run_electrum
     ;;
 esac

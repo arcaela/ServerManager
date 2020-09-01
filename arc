@@ -1,8 +1,8 @@
 #!/bin/bash
 . $(dirname $(realpath $0))/.env
+__dd="$base_path/.basharc"
 [[ ! -f "$bin_path/arc" ]] && $(add_bin arc "$base_path/arc")
-if [[ ! -f "$base_path/.bashrc" || $command == '--server-refresh' ]]; then
-    __dd="$base_path/.bashrc"
+if [[ ! -f "$__dd" || $command == '--server-refresh' ]]; then
     $(delete $_dd)
     echo '#!/bin/bash' >> $__dd
     echo $(parse_export $base_path/bin) >> $__dd
@@ -18,8 +18,8 @@ if [[ ! -f "$base_path/.bashrc" || $command == '--server-refresh' ]]; then
 fi
 
 #########################################################
-if [[ -f "$script_path/$pcmd" ]]; then
-    source $script_path/$pcmd
+if [[ -f "$script_path/$fcmd" ]]; then
+    source $script_path/$fcmd
 elif [[ -f "$script_path/${command:2}" ]]; then
     source $script_path/${command:2}
 elif [[ -f "$script_path/$namespace" ]]; then
