@@ -1,4 +1,5 @@
-.Trash-1000/
+.*
+!.gitignore
 basharc
 basharc.d/
 bin/
