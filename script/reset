@@ -1,0 +1,6 @@
+#!/bin/bash
+$(delete $bin_path)
+$(delete $bash_file)
+$(delete $bash_path)
+$(delete $services_path/nodejs)
+. ~/.profile
