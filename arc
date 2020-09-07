@@ -10,6 +10,6 @@ elif [[ -f "$script_path/${command:2}" ]]; then
 elif [[ -f "$script_path/$namespace" ]]; then
     source "$script_path/$namespace"
 else
-    echo "$command no existe como comando interno o externo."
+    echo "El comando no está registrado."
 fi
 #########################################################

@@ -1,17 +1,16 @@
-#!/bin/bash
-
+# !/bin/bash
 if [[ ! -f "$bash_file" ]]; then
-    $(delete /etc/bash_completion.d/arcaela)
-echo "#!/bin/bash
-$(parse_export $base_path/bin)
+$(delete $bash_file)
+$(delete /etc/bash_completion.d/arcaela)
+sudo echo "#!/bin/bash
+export PATH=$base_path/bin:\$PATH
 if [[ -d $bash_path ]]; then
     for file in $bash_path/*; do
         "'[[ -f $file ]] && . $file'"
     done
-fi
-" >> $bash_file
-    $(link $bash_file /etc/bash_completion.d/arcaela)
-    sudo chmod -R 777 $bash_file
-    . $bash_file
+fi" >> $bash_file
+$(link $bash_file /etc/bash_completion.d/arcaela)
+sudo chmod -R 777 $bash_file
+. $bash_file
 fi
 [[ ! -f "$bin_path/arc" ]] && $(add_bin arc "$base_path/arc")

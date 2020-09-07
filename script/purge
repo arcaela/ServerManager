@@ -1,0 +1,29 @@
+#!/bin/bash
+remove_apps=0
+
+
+function purge_nodejs {
+    distro='linux-x64'
+    version='v14.5.0'
+    node_path="/usr/local/lib/nodejs/node-$version-$distro"
+    delete $node_path/bin/node /usr/bin/node
+    delete $node_path/bin/npm /usr/bin/npm
+    delete $node_path/bin/npx /usr/bin/npx
+    delete $bash_path/node.bash
+    delete $(dirname $node_path)
+    . ~/.profile
+    remove_apps=$((installed_apps+3))
+}
+
+
+
+
+
+
+
+for require in ${params[@]}; do
+    if typeset -f "purge_$require" > /dev/null; then
+        "purge_$require"
+    fi
+done
+echo "Se han removido ($installed_apps) servicios."

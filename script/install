@@ -1,30 +1,37 @@
 #!/bin/bash
 installed_apps=0
-
-function install_node {
+function install_nodejs {
     distro='linux-x64'
     version='v14.5.0'
-    node_path="$services_path/nodejs"
-    node_bash="$bash_path/nodejs.bash"
-    delete $node_path
-    delete $node_bash
-    if [[ ! -f "$temp_path/node-$version-$distro.tar.xz" ]]; then
+    node_path="/usr/local/lib/nodejs/node-$version-$distro"
+    rmkdir $(dirname $node_path)
+    if [[ ! -f "$temp_path/$(basename $node_path).tar.xz" ]]; then
         echo "Descargando NodeJS $version"
-        wget -P $temp_path/ https://nodejs.org/dist/$version/node-$version-$distro.tar.xz -q --show-progress
+        wget -P $temp_path/ "https://nodejs.org/dist/$version/$(basename $node_path).tar.xz" -q --show-progress
     fi
-    if [[ -f "$temp_path/node-$version-$distro.tar.xz" ]]; then
+    if [[ -f "$temp_path/$(basename $node_path).tar.xz" ]]; then
         echo "Instalando NodeJS $version"
-        sudo tar -xJf $temp_path/node-$version-$distro.tar.xz -C $services_path/
-        sudo mv "$services_path/node-$version-$distro" $node_path/
+        sudo tar -xJf $temp_path/$(basename $node_path).tar.xz -C $(dirname $node_path)
+        sudo chmod -R 777 $node_path/
         echo "Registrando recursos..."
-        echo '#!/bin/bash
-            PATH='$node_path'/bin:$PATH' >> $node_bash
+        echo "export PATH=$node_path/bin:\$PATH" >> "$bash_path/node.bash"
+        link $node_path/bin/node /usr/bin/node
+        link $node_path/bin/npm /usr/bin/npm
+        link $node_path/bin/npx /usr/bin/npx
         installed_apps=$((installed_apps+3))
     fi
 }
-function install_nodejs {
-    install_node
+
+function install_git {
+    echo "Instalando git"
+    [[ $(which git) ]] && return
+    sudo apt-get install software-properties-common git -y
+    echo "Git Instalado: $(which git)"
+    installed_apps=$((installed_apps+1))
 }
+
+
+
 
 function install_composer {
 [[ $(which composer) ]] && return
@@ -83,21 +90,12 @@ function install_apache2 {
     installed_apps=$((installed_apps+1))
 }
 
-function install_git {
-    echo "Instalando git"
-    [[ $(which git) ]] && return
-    sudo apt-get install software-properties-common git -y
-    echo "Git Instalado: $(which git)"
-    installed_apps=$((installed_apps+1))
-}
-
 
 function install_electrum {
     [[ $(which electrum) ]] && return
     alter_cmd='--install'
     source $script_path/electrum
 }
-
 
 for require in ${params[@]}; do
     if typeset -f "install_$require" > /dev/null; then
