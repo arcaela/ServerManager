@@ -1,12 +1,11 @@
 #!/bin/bash
 root="$services_path/electrum"
-sources="$root/ubuntu"
 data="$root/data"
 action="$command"
 [[ ! -z $alter_cmd ]] && action="$alter_cmd"
 
 function run_electrum {
-    $sources/run_electrum $@ -D "$data"
+    $root/run_electrum $@ --dir "$root" --testnet
 }
 
 case "$action" in
@@ -16,7 +15,7 @@ case "$action" in
         echo "Registrando paquetes..."
         sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography python3-setuptools python3-pip -y
         echo "Instalando Electrum"
-        git clone --depth 1 https://github.com/arcaela/electrum.git $sources/
+        git clone --depth 1 https://github.com/arcaela/electrum.git $root/
         $(add_bin electrum $base_path/arc)
         installed_apps=$((installed_apps+1))
     ;;
