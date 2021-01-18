@@ -1,12 +1,13 @@
 #!/bin/bash
-
-path="$services_path/electrum"
-data="$path/data"
+root="$services_path/electrum"
+data="$root/data"
 action="$command"
 [[ ! -z $alter_cmd ]] && action="$alter_cmd"
+
 function run_electrum {
-    $root/run_electrum $@ --dir "$path"
+    $root/run_electrum $@ --dir "$root" --testnet
 }
+
 case "$action" in
     --install)
         [[ $(which electrum) ]] && return
@@ -31,6 +32,6 @@ case "$action" in
         run_electrum stop
     ;;
     *)
-        $root/run_electrum $@ --dir "$path"
+        run_electrum
     ;;
 esac
