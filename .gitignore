@@ -7,5 +7,6 @@ helper/
 services/
 temp/
 web/
+api/
 $REC*
 System*
