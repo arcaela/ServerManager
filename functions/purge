@@ -1,7 +1,5 @@
 #!/bin/bash
 remove_apps=0
-
-
 function purge_nodejs {
     distro='linux-x64'
     version='v14.5.0'
@@ -14,14 +12,7 @@ function purge_nodejs {
     . ~/.profile
     remove_apps=$((installed_apps+3))
 }
-
-
-
-
-
-
-
-for require in ${params[@]}; do
+for require in ${arguments[@]}; do
     if typeset -f "purge_$require" > /dev/null; then
         "purge_$require"
     fi

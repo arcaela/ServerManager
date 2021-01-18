@@ -1,21 +1,27 @@
 #!/bin/bash
+[[ -z $base_path ]] && source "../.env"
 root="$services_path/electrum"
 data="$root/data"
-action="$command"
-[[ ! -z $alter_cmd ]] && action="$alter_cmd"
+
+
+
+
+exit
 
 function run_electrum {
-    $root/run_electrum $@ --dir "$root" --testnet
+    $root/run_electrum $@ --dir "$root"
 }
 
-case "$action" in
-    --install)
+case "$command" in
+    install)
         [[ $(which electrum) ]] && return
         $(rmkdir $root)
         echo "Registrando paquetes..."
         sudo apt-get install python3-pyqt5 libsecp256k1-0 python3-cryptography python3-setuptools python3-pip -y
         echo "Instalando Electrum"
         git clone --depth 1 https://github.com/arcaela/electrum.git $root/
+        sudo python3 $root/setup.py install
+        $(delete $(whereis electrum))
         $(add_bin electrum $base_path/arc)
         installed_apps=$((installed_apps+1))
     ;;
@@ -32,6 +38,6 @@ case "$action" in
         run_electrum stop
     ;;
     *)
-        run_electrum
+        run_electrum $arguments
     ;;
 esac
