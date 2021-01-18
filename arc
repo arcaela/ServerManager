@@ -1,15 +1,13 @@
 #!/bin/bash
 . $(dirname $(realpath $0))/.env
-. $script_path/autoload
-
 #########################################################
-if [[ -f "$script_path/$fcmd" ]]; then
-    source $script_path/$fcmd
-elif [[ -f "$script_path/${command:2}" ]]; then
-    source $script_path/${command:2}
-elif [[ -f "$script_path/$namespace" ]]; then
-    source "$script_path/$namespace"
+if [[ $command == "arc" ]]; then
+    command="${@:1:1}"
+    arguments=(${@:2})
+    source $function_path/$command
+elif [[ -f "$commands_path/$command" ]]; then
+    source $commands_path/$command
 else
-    echo "El comando no está registrado."
+    echo "No podemos ejectura: $command"
 fi
 #########################################################

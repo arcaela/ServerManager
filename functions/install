@@ -93,11 +93,10 @@ function install_apache2 {
 
 function install_electrum {
     [[ $(which electrum) ]] && return
-    alter_cmd='--install'
     source $script_path/electrum
 }
 
-for require in ${params[@]}; do
+for require in ${arguments[@]}; do
     if typeset -f "install_$require" > /dev/null; then
         "install_$require"
     fi
